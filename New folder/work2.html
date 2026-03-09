@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewDAV WEST STYLIST</title>
+    <!-- Importing a font for better styling -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette requested: Lemon Green, Yellow, Blue, Pink */
+            --color-blue: #0047AB;
+            --color-pink: #FF69B4;
+            --color-yellow: #FFD700;
+            --color-green: #ADFF2F; /* Lemon Green */
+            --color-dark: #333333;
+            --color-light: #f4f7f6;
+            --color-white: #ffffff;
+            --color-danger: #ff4757;
+            
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--color-light);
+            color: var(--color-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header & Branding --- */
+        header {
+            background: var(--color-white);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--color-blue);
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--color-blue), 
+                var(--color-pink), 
+                var(--color-yellow), 
+                var(--color-green), 
+                var(--color-blue)
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--color-dark);
+            margin-left: 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav button:hover {
+            color: var(--color-pink);
+        }
+
+        nav button.active {
+            color: var(--color-blue);
+            border-bottom: 2px solid var(--color-blue);
+        }
+
+        /* --- Main Layout --- */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 20px auto;
+            width: 95%;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two Column Request */
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr; /* Stack on mobile */
+            }
+        }
+
+        /* --- Sections & Cards --- */
+        .panel {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .panel-header {
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--color-light);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            color: var(--color-blue);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* --- Search Bar --- */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="tel"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--color-blue);
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--color-blue);
+            color: white;
+        }
+
+        .btn-accent {
+            background-color: var(--color-pink);
+            color: white;
+        }
+
+        .btn-locate {
+            background-color: var(--color-green);
+            color: var(--color-dark);
+        }
+
+        .btn-danger {
+            background-color: var(--color-danger);
+            color: white;
+        }
+
+        /* --- Stylist List --- */
+        .stylist-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            transition: box-shadow 0.3s;
+            position: relative;
+        }
+
+        .stylist-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: var(--color-green);
+        }
+
+        .stylist-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #ddd;
+            object-fit: cover;
+        }
+
+        .stylist-info h3 {
+            font-size: 1rem;
+            color: var(--color-dark);
+            margin-bottom: 5px;
+        }
+
+        .stylist-info p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .stylist-distance {
+            font-size: 0.8rem;
+            color: var(--color-blue);
+            font-weight: 600;
+            background: rgba(0, 71, 171, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* --- Booking Form --- */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* --- Stylist Portal (Notifications) --- */
+        .notification-badge {
+            background: var(--color-danger);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            display: none;
+        }
+
+        .booking-item {
+            background: #f9f9f9;
+            border-left: 4px solid var(--color-yellow);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .booking-item.status-cancelled {
+            border-left-color: var(--color-danger);
+            opacity: 0.7;
+        }
+
+        .booking-item.status-confirmed {
+            border-left-color: var(--color-green);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* --- Toast Notification --- */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--color-dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* --- Location Loader --- */
+        .locating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--color-blue);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top: 2px solid var(--color-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- Helper Classes --- */
+        .hidden { display: none !important; }
+        .text-blue { color: var(--color-blue); }
+        .text-pink { color: var(--color-pink); }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-icon">ND</div>
+            NewDAV WEST STYLIST
+        </div>
+        <nav>
+            <button onclick="router('client-home')" id="nav-client" class="active">Find Stylist</button>
+            <button onclick="router('stylist-portal')" id="nav-stylist" style="position: relative;">
+                Stylist Portal
+                <span id="stylist-badge" class="notification-badge">0</span>
+            </button>
+            <button onclick="router('register-stylist')">Join as Stylist</button>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-container">
+        
+        <!-- View: Client Home (Search & List) -->
+        <section id="view-client-home" class="full-width">
+            <!-- Left Column: Search & Filters -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Find a Stylist</span>
+                </div>
+                
+                <div class="locating hidden" id="geo-loader">
+                    <div class="spinner"></div> Detecting your location...
+                </div>
+
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search by name or skill (e.g. Braids)...">
+                    <button class="btn btn-primary" onclick="filterStylists()">Search</button>
+                </div>
+
+                <button class="btn btn-locate" style="width: 100%; margin-bottom: 20px;" onclick="getMyLocation()">
+                    📍 Find Nearest Stylist to Me
+                </button>
+
+                <div id="stylist-list-container">
+                    <!-- Stylist cards injected here -->
+                </div>
+            </div>
+
+            <!-- Right Column: Booking Action -->
+            <div class="panel" id="booking-panel" style="position: sticky; top: 100px;">
+                <div class="panel-header">
+                    <span class="panel-title">Book a Service</span>
+                </div>
+                <div id="booking-content">
+                    <p style="color: #666; text-align: center; margin-top: 40px;">
+                        Select a stylist from the left list to view details and book.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- View: Stylist Portal -->
+        <section id="view-stylist-portal" class="full-width hidden">
+            <!-- Left Column: Booking Requests -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Incoming Bookings</span>
+                    <button class="btn btn-primary" style="font-size: 0.8rem;" onclick="refreshStylistPortal()">Refresh</button>
+                </div>
+                <div id="portal-bookings-list">
+                    <p style="padding: 20px; text-align: center; color: #888;">No new bookings.</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Stylist Profile/Details -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">My Portal</span>
+                </div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://picsum.photos/seed/stylistme/100/100" style="border-radius: 50%; border: 3px solid var(--color-pink);" alt="Profile">
+                    <h3 style="margin-top: 10px;">Welcome, Stylist</h3>
+                    <p class="text-blue" style="font-size: 0.9rem;">Western Region Node</p>
+                </div>
+                <div class="form-group">
+                    <label>Current Status</label>
+                    <select disabled style="background: #f4f4f4;">
+                        <option>Available for Bookings</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Portal Notifications</label>
+                    <p style="font-size: 0.9rem; color: #666;">
+                        You will be notified here instantly when a client books your services. Their contact address (Phone, House Address, Landmark) will be visible upon review.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- View: Register Stylist -->
+        <section id="view-register-stylist" class="full-width hidden">
+            <div class="panel" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto;">
+                <div class="panel-header">
+                    <span class="panel-title">Join NewDAV West Stylist Community</span>
+                </div>
+                <form onsubmit="handleStylistRegistration(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" required placeholder="e.g. Adebayo Styling">
+                    </div>
+                    <div class="form-group">
+                        <label>Specialty</label>
+                        <input type="text" required placeholder="e.g. Dreadlocks, Braiding, Barbing">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" required placeholder="080 XXX XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Salon Address</label>
+                        <input type="text" required placeholder="Street, City, Western Region">
+                    </div>
+                    <div class="form-group">
+                        <label>Landmark</label>
+                        <input type="text" placeholder="Near popular market, school, etc.">
+                    </div>
+                    <button type="submit" class="btn btn-accent" style="width: 100%;">Register Now</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- View: My Bookings (Client) -->
+        <section id="view-my-bookings" class="full-width hidden">
+             <div class="panel" style="grid-column: 1 / -1;">
+                <div class="panel-header">
+                    <span class="panel-title">My Bookings</span>
+                </div>
+                <div id="client-bookings-list">
+                    <!-- Client booking history -->
+                </div>
+             </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // --- Data & State ---
+
+        // Simulating a database of stylists in Western Nigeria (approx coords for demo)
+        // Lagos/Ibadan axis coordinates roughly
+        let stylists = [
+            { id: 1, name: "Chioma Braids", specialty: "Knotless & Braids", lat: 6.5244, lng: 3.3792, address: "Ikeja, Lagos", phone: "08012345678", rating: 4.8 },
+            { id: 2, name: "Femi Cuts", specialty: "Barber & Haircuts", lat: 6.6018, lng: 3.3515, address: "Ojota, Lagos", phone: "08087654321", rating: 4.5 },
+            { id: 3, name: "Ibadan Queens", specialty: "Weaving & Fixing", lat: 7.3775, lng: 3.9470, address: "Bodija, Ibadan", phone: "07055566677", rating: 4.9 },
+            { id: 4, name: "Abeokuta Styles", specialty: "Traditional Styling", lat: 7.1475, lng: 3.3452, address: "Kuto, Abeokuta", phone: "08100011122", rating: 4.6 },
+            { id: 5, name: "Benin Glam", specialty: "Makeover & Gele", lat: 6.3350, lng: 5.6037, address: "GRA, Benin", phone: "09099988877", rating: 4.7 }
+        ];
+
+        // Load bookings from local storage or initialize empty
+        let bookings = JSON.parse(localStorage.getItem('newdav_bookings')) || [];
+        
+        let currentLocation = null; // User's lat/lng
+        let selectedStylist = null; // Stylist currently being booked
+
+        // --- Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStylistList(stylists);
+            updateStylistBadge();
+        });
+
+        // --- Navigation / Router ---
+
+        function router(viewName) {
+            // Hide all sections
+            document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+            
+            // Update Nav Buttons
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+
+            // Show selected
+            if(viewName === 'client-home') {
+                document.getElementById('view-client-home').classList.remove('hidden');
+                document.getElementById('nav-client').classList.add('active');
+                renderClientBookings(); // Also refresh client view
+            } else if (viewName === 'stylist-portal') {
+                document.getElementById('view-stylist-portal').classList.remove('hidden');
+                document.getElementById('nav-stylist').classList.add('active');
+                refreshStylistPortal();
+            } else if (viewName === 'register-stylist') {
+                document.getElementById('view-register-stylist').classList.remove('hidden');
+            }
+        }
+
+        function showMyBookings() {
+            document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-my-bookings').classList.remove('hidden');
+            renderClientBookings();
+        }
+
+        // --- Geolocation Logic ---
+
+        function getMyLocation() {
+            const loader = document.getElementById('geo-loader');
+            loader.classList.remove('hidden');
+
+            if (!navigator.geolocation) {
+                showToast("Geolocation is not supported by your browser", "error");
+                loader.classList.add('hidden');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    loader.classList.add('hidden');
+                    showToast("Location found! Showing nearest stylists.", "success");
+                    sortStylistsByDistance();
+                },
+                () => {
+                    loader.classList.add('hidden');
+                    showToast("Unable to retrieve location. Check permissions.", "error");
+                }
+            );
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the earth in km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            const d = R * c; // Distance in km
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+
+        function sortStylistsByDistance() {
+            if (!currentLocation) return;
+
+            const sorted = [...stylists].map(s => {
+                s.distance = calculateDistance(currentLocation.lat, currentLocation.lng, s.lat, s.lng);
+                return s;
+            }).sort((a, b) => a.distance - b.distance);
+
+            renderStylistList(sorted, true);
+        }
+
+        // --- Stylist Listing & Search ---
+
+        function filterStylists() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = stylists.filter(s => 
+                s.name.toLowerCase().includes(query) || 
+                s.specialty.toLowerCase().includes(query)
+            );
+            renderStylistList(filtered);
+        }
+
+        function renderStylistList(list, showDistance = false) {
+            const container = document.getElementById('stylist-list-container');
+            container.innerHTML = '';
+
+            if (list.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888;">No stylists found.</p>';
+                return;
+            }
+
+            list.forEach(s => {
+                const distText = showDistance ? `<span class="stylist-distance">${s.distance.toFixed(1)} km away</span>` : '';
+                
+                const card = document.createElement('div');
+                card.className = 'stylist-card';
+                card.innerHTML = `
+                    <img src="https://picsum.photos/seed/${s.name.replace(' ','')}/100/100" class="stylist-avatar" alt="${s.name}">
+                    <div class="stylist-info">
+                        <h3>${s.name}</h3>
+                        <p>${s.specialty}</p>
+                        <p>📍 ${s.address}</p>
+                        <p>⭐ ${s.rating}</p>
+                        ${distText}
+                    </div>
+                `;
+                card.onclick = () => selectStylistForBooking(s);
+                container.appendChild(card);
+            });
+        }
+
+        // --- Booking Logic ---
+
+        function selectStylistForBooking(stylist) {
+            selectedStylist = stylist;
+            const panel = document.getElementById('booking-content');
+            
+            panel.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 class="text-blue">Book ${stylist.name}</h3>
+                    <p>${stylist.specialty}</p>
+                </div>
+                <form onsubmit="submitBooking(event)">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="client-name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="client-phone" required placeholder="Your contact number">
+                    </div>
+                    <div class="form-group">
+                        <label>House Address</label>
+                        <input type="text" id="client-address" required placeholder="No 12, Street Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Nearest Landmark</label>
+                        <input type="text" id="client-landmark" placeholder="e.g. Near the Primary School">
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Date</label>
+                        <input type="date" required id="booking-date">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Booking</button>
+                    <button type="button" class="btn" style="width: 100%; margin-top: 10px; color: var(--color-danger);" onclick="showMyBookings()">View My Bookings</button>
+                </form>
+            `;
+        }
+
+        function submitBooking(e) {
+            e.preventDefault();
+            
+            const newBooking = {
+                id: Date.now(),
+                stylistId: selectedStylist.id,
+                stylistName: selectedStylist.name,
+                stylistPhone: selectedStylist.phone, // Visible to client
+                clientName: document.getElementById('client-name').value,
+                clientPhone: document.getElementById('client-phone').value, // Visible to stylist
+                clientAddress: document.getElementById('client-address').value,
+                clientLandmark: document.getElementById('client-landmark').value,
+                date: document.getElementById('booking-date').value,
+                status: 'Pending',
+                timestamp: new Date().toISOString()
+            };
+
+            bookings.push(newBooking);
+            saveData();
+            updateStylistBadge();
+            
+            showToast(`Booking request sent to ${selectedStylist.name}!`, "success");
+            
+            // Reset form
+            document.getElementById('booking-content').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h3 class="text-blue">Booking Sent!</h3>
+                    <p>You can manage your booking in the "My Bookings" section.</p>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="showMyBookings()">My Bookings</button>
+                </div>
+            `;
+        }
+
+        // --- Booking Management (Client Side) ---
+
+        function renderClientBookings() {
+            const container = document.getElementById('client-bookings-list');
+            container.innerHTML = '';
+
+            // In a real app we'd filter by logged-in user ID. 
+            // Here we assume the current browser user is the client for these bookings.
+            if (bookings.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding: 20px;">No active bookings.</p>';
+                return;
+            }
+
+            // Reverse to show newest first
+            [...bookings].reverse().forEach(b => {
+                let actions = '';
+                if(b.status !== 'Cancelled') {
+                    actions = `
+                        <button class="btn btn-danger" style="font-size: 0.7rem; padding: 5px 10px;" onclick="cancelBooking(${b.id})">Cancel Mistake</button>
+                    `;
+                }
+
+                const item = document.createElement('div');
+                item.className = `booking-item status-${b.status.toLowerCase()}`;
+                item.innerHTML = `
+                    <div class="booking-header">
+                        <span>${b.stylistName}</span>
+                        <span class="${b.status === 'Pending' ? 'text-pink' : 'text-blue'}">${b.status}</span>
+                    </div>
+                    <p><strong>Date:</strong> ${b.date}</p>
+                    <p><strong>Stylist Contact:</strong> ${b.stylistPhone}</p>
+                    <div style="margin-top: 10px; border-top: 1px solid #ddd; padding-top: 5px;">
+                        ${actions}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function cancelBooking(id) {
+            if(confirm("Are you sure you want to cancel this booking?")) {
+                const idx = bookings.findIndex(b => b.id === id);
+                if(idx > -1) {
+                    bookings[idx].status = 'Cancelled';
+                    saveData();
+                    renderClientBookings();
+                    updateStylistBadge();
+                    showToast("Booking cancelled.", "success");
+                }
+            }
+        }
+
+        // --- Stylist Portal Logic ---
+
+        function updateStylistBadge() {
+            const pendingCount = bookings.filter(b => b.status === 'Pending').length;
+            const badge = document.getElementById('stylist-badge');
+            if(pendingCount > 0) {
+                badge.innerText = pendingCount;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function refreshStylistPortal() {
+            const container = document.getElementById('portal-bookings-list');
+            container.innerHTML = '';
+            
+            const pendingBookings = bookings.filter(b => b.status === 'Pending');
+            
+            if(pendingBookings.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: #888;">No new pending requests.</p>';
+                return;
+            }
+
+            pendingBookings.forEach(b => {
+                const item = document.createElement('div');
+                item.className = 'booking-item';
+                item.innerHTML = `
+                    <div class="booking-header">
+                        <span>New Request</span>
+                        <span style="font-size: 0.8rem; color: #888;">${new Date(b.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                    <p><strong>Client:</strong> ${b.clientName}</p>
+                    <p><strong>Service Date:</strong> ${b.date}</p>
+                    <div style="background: rgba(0,71,171,0.05); padding: 10px; border-radius: 4px; margin-top: 5px;">
+                        <p style="margin-bottom: 4px;"><strong>📞 Phone:</strong> <a href="tel:${b.clientPhone}" class="text-blue">${b.clientPhone}</a></p>
+                        <p style="margin-bottom: 4px;"><strong>🏠 Address:</strong> ${b.clientAddress}</p>
+                        <p><strong>📍 Landmark:</strong> ${b.clientLandmark}</p>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="acceptBooking(${b.id})">Accept & Call</button>
+                        <button class="btn btn-danger" style="flex:1;" onclick="rejectBooking(${b.id})">Reject</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function acceptBooking(id) {
+            const idx = bookings.findIndex(b => b.id === id);
+            if(idx > -1) {
+                bookings[idx].status = 'Confirmed';
+                saveData();
+                refreshStylistPortal();
+                updateStylistBadge();
+                showToast("Booking Confirmed! Contact info available.", "success");
+            }
+        }
+
+        function rejectBooking(id) {
+            const idx = bookings.findIndex(b => b.id === id);
+            if(idx > -1) {
+                bookings[idx].status = 'Rejected';
+                saveData();
+                refreshStylistPortal();
+                updateStylistBadge();
+                showToast("Booking Rejected.", "error");
+            }
+        }
+
+        // --- Registration Logic ---
+
+        function handleStylistRegistration(e) {
+            e.preventDefault();
+            // In a real app, this would send data to server.
+            // Here, we just simulate success.
+            showToast("Registration Successful! Welcome to the community.", "success");
+            e.target.reset();
+            router('client-home');
+        }
+
+        // --- Utilities ---
+
+        function saveData() {
+            localStorage.setItem('newdav_bookings', JSON.stringify(bookings));
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const icon = type === 'success' ? '✅' : '⚠️';
+            
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>

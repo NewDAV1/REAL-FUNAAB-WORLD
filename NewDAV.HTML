@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaijaStyle Connect | Find Top Hair Stylists in Nigeria</title>
+    <style>
+        :root {
+            --primary: #008751; /* Nigeria Green */
+            --primary-dark: #006039;
+            --accent: #D8D32D; /* Naija Gold/Yellow hint */
+            --text-dark: #1a1a1a;
+            --text-light: #666666;
+            --bg-light: #f9f9f9;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .nav-links button {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            margin-left: 2rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links button:hover {
+            color: var(--primary);
+        }
+
+        .nav-links .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+        }
+
+        .nav-links .btn-primary:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+        }
+
+        /* --- Layout & Sections --- */
+        main {
+            padding: 2rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 80vh;
+        }
+
+        .section {
+            display: none; /* Controlled by JS */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+        }
+
+        .hero span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .search-input {
+            padding: 1rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            width: 300px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 135, 81, 0.1);
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-large:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* --- Filters --- */
+        .filter-bar {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .filter-group select {
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        /* --- Stylist Grid --- */
+        .stylist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-img {
+            height: 200px;
+            width: 100%;
+            background-color: #c95757;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .stylist-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .stylist-rating {
+            background: #b87e13;
+            color: #FFA000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .stylist-loc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            background: #98b949;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .price-range {
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: auto;
+        }
+
+        /* --- Detail View --- */
+        .detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .detail-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+
+        .detail-info h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-meta {
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .bio-box {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .booking-form {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #ba9999;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #4e3d3d;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* --- Join Form --- */
+        .join-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(86, 9, 9, 0.2);
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.success { border-left: 4px solid var(--primary); }
+        .toast.error { border-left: 4px solid #c55a28; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .detail-container {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; } /* Simplified for mobile demo */
+            .nav-wrapper { position: relative; }
+            /* Simple mobile menu implementation */
+            .mobile-menu-btn { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo" onclick="app.navigate('home')">
+            ✂️ NaijaStyle Connect
+        </div>
+        <div class="nav-links">
+            <button onclick="app.navigate('home')">Find Stylist</button>
+            <button onclick="app.navigate('join')">Join as Stylist</button>
+            <button class="btn-primary" onclick="app.navigate('home')">Login</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app">
+        
+        <!-- View: Home & Search -->
+        <section id="view-home" class="section active">
+            <div class="hero">
+                <h1>Connecting Every <br> <span>Hair Stylist</span> in Nigeria</h1>
+                <p>From Braids in Lagos to Locs in Abuja, find the perfect professional near you.</p>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="global-search" placeholder="Search by style or name..." onkeyup="app.filterStylists()">
+                    <button class="btn-large" onclick="app.scrollToGrid()">Search</button>
+                </div>
+            </div>
+
+            <div id="marketplace">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label>State / Location</label>
+                        <select id="filter-state" onchange="app.filterStylists()">
+                            <option value="All">All Locations</option>
+                            <option value="Lagos">Lagos</option>
+                            <option value="Abuja">Abuja</option>
+                            <option value="Rivers">Rivers (PH)</option>
+                            <option value="Enugu">Enugu</option>
+                            <option value="Oyo">Ibadan (Oyo)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Service Type</label>
+                        <select id="filter-service" onchange="app.filterStylists()">
+                            <option value="All">All Services</option>
+                            <option value="Braids">Braids & Weaves</option>
+                            <option value="Barber">Barber / Cuts</option>
+                            <option value="Locs">Locs / Twists</option>
+                            <option value="Natural">Natural Hair Care</option>
+                            <option value="Color">Hair Coloring</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Sort By</label>
+                        <select id="sort-price" onchange="app.filterStylists()">
+                            <option value="default">Recommended</option>
+                            <option value="low">Price: Low to High</option>
+                            <option value="high">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <h3 id="results-count">Showing Top Stylists</h3>
+                <div class="stylist-grid" id="stylist-grid">
+                    <!-- Cards injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Stylist Detail -->
+        <section id="view-detail" class="section">
+            <button onclick="app.navigate('home')" style="margin-bottom: 1rem; border:none; background:none; cursor:pointer; color:var(--primary); font-weight:600;">&larr; Back to Search</button>
+            <div id="detail-content">
+                <!-- Content injected via JS -->
+            </div>
+        </section>
+
+        <!-- View: Join Form -->
+        <section id="view-join" class="section">
+            <div class="join-wrapper">
+                <h2 style="text-align: center;">Join the Network</h2>
+                <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">Register your salon or freelance services. Be seen by thousands across Nigeria.</p>
+                
+                <form id="join-form" onsubmit="app.handleJoin(event)">
+                    <div class="form-group">
+                        <label>Full Name / Business Name</label>
+                        <input type="text" name="name" required placeholder="e.g. Ada's Braids">
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select name="state" required>
+                            <option value="Lagos">Lagos</option>
+                            <option value="Abuja">Abuja</option>
+                            <option value="Rivers">Rivers</option>
+                            <option value="Enugu">Enugu</option>
+                            <option value="Oyo">Oyo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Primary Specialty</label>
+                        <select name="specialty" required>
+                            <option value="Braids">Braids & Weaves</option>
+                            <option value="Barber">Barber / Cuts</option>
+                            <option value="Locs">Locs / Twists</option>
+                            <option value="Natural">Natural Hair Care</option>
+                            <option value="Color">Hair Coloring</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Base Price (₦)</label>
+                        <input type="number" name="price" required placeholder="e.g. 5000">
+                    </div>
+                    <div class="form-group">
+                        <label>Short Bio</label>
+                        <textarea name="bio" rows="4" required placeholder="Tell clients about your experience..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-large" style="width: 100%;">Create Profile</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2rem; background: #fff; margin-top: 2rem; color: var(--text-light); border-top: 1px solid #eee;">
+        <p>&copy; 2023 NaijaStyle Connect. Made for Nigeria.</p>
+    </footer>
+
+    <!-- Toast Component -->
+    <div id="toast" class="toast">
+        <span id="toast-icon">✅</span>
+        <span id="toast-message">Operation successful</span>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // --- Data Model ---
+        const initialStylists = [
+            {
+                id: 1,
+                name: "Chisom's Touch",
+                location: "Lagos",
+                specialty: "Braids",
+                rating: 4.8,
+                reviews: 120,
+                price: 5000,
+                bio: "Expert in Knotless braids and Ghana weaving. Home service available in Lekki and VI.",
+                image: "https://picsum.photos/seed/chisom/400/300"
+            },
+            {
+                id: 2,
+                name: "Kings Barbing Salon",
+                location: "Abuja",
+                specialty: "Barber",
+                rating: 4.5,
+                reviews: 85,
+                price: 2000,
+                bio: "The sharpest fades in Wuse 2. We treat kings like kings. Walk-ins welcome.",
+                image: "https://picsum.photos/seed/kings/400/300"
+            },
+            {
+                id: 3,
+                name: "Natural Queen Spa",
+                location: "Rivers",
+                specialty: "Natural",
+                rating: 4.9,
+                reviews: 210,
+                price: 8000,
+                bio: "Specializing in healthy hair treatments, silk presses, and protective styles for natural hair.",
+                image: "https://picsum.photos/seed/queen/400/300"
+            },
+            {
+                id: 4,
+                name: "Mega Locs Studio",
+                location: "Enugu",
+                specialty: "Locs",
+                rating: 4.7,
+                reviews: 60,
+                price: 4500,
+                bio: "Retwisting, styling, and starting new locs. Professional and hygienic.",
+                image: "https://picsum.photos/seed/mega/400/300"
+            },
+            {
+                id: 5,
+                name: "Bella's Color Lab",
+                location: "Lagos",
+                specialty: "Color",
+                rating: 4.6,
+                reviews: 45,
+                price: 15000,
+                bio: "Vivid colors, blonding, and highlights. Top quality products used only.",
+                image: "https://picsum.photos/seed/bella/400/300"
+            },
+            {
+                id: 6,
+                name: "Ibadan Cuts",
+                location: "Oyo",
+                specialty: "Barber",
+                rating: 4.3,
+                reviews: 150,
+                price: 1000,
+                bio: "Affordable, quick, and clean cuts for the whole family. Located at Bodija.",
+                image: "https://picsum.photos/seed/ibadan/400/300"
+            }
+        ];
+
+        // --- Application Controller ---
+        const app = {
+            data: {
+                stylists: [...initialStylists],
+                currentView: 'home',
+                selectedStylist: null
+            },
+
+            init: function() {
+                this.renderGrid(this.data.stylists);
+            },
+
+            // Navigation Handler
+            navigate: function(viewId) {
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+                
+                // Show target section
+                document.getElementById(`view-${viewId}`).classList.add('active');
+                
+                // Special handling for home to scroll top
+                if(viewId === 'home') {
+                    window.scrollTo(0,0);
+                }
+                
+                this.data.currentView = viewId;
+            },
+
+            // Render the Grid of Stylists
+            renderGrid: function(list) {
+                const grid = document.getElementById('stylist-grid');
+                const countLabel = document.getElementById('results-count');
+                grid.innerHTML = '';
+
+                countLabel.textContent = `Showing ${list.length} Stylist${list.length !== 1 ? 's' : ''}`;
+
+                if (list.length === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">No stylists found matching your criteria. Try adjusting filters.</div>`;
+                    return;
+                }
+
+                list.forEach(stylist => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.onclick = () => this.viewDetail(stylist.id);
+                    
+                    // Format currency
+                    const priceFormatted = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(stylist.price);
+
+                    card.innerHTML = `
+                        <img src="${stylist.image}" alt="${stylist.name}" class="card-img">
+                        <div class="card-body">
+                            <div class="card-header">
+                                <div class="stylist-name">${stylist.name}</div>
+                                <div class="stylist-rating">⭐ ${stylist.rating}</div>
+                            </div>
+                            <div class="stylist-loc">📍 ${stylist.location}</div>
+                            <div class="tags">
+                                <span class="tag">${stylist.specialty}</span>
+                            </div>
+                            <div class="price-range">Starts at ${priceFormatted}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            },
+
+            // Filter Logic
+            filterStylists: function() {
+                const searchVal = document.getElementById('global-search').value.toLowerCase();
+                const stateVal = document.getElementById('filter-state').value;
+                const serviceVal = document.getElementById('filter-service').value;
+                const sortVal = document.getElementById('sort-price').value;
+
+                let filtered = this.data.stylists.filter(s => {
+                    const matchesSearch = s.name.toLowerCase().includes(searchVal) || s.specialty.toLowerCase().includes(searchVal);
+                    const matchesState = stateVal === 'All' || s.location === stateVal;
+                    const matchesService = serviceVal === 'All' || s.specialty === serviceVal;
+                    return matchesSearch && matchesState && matchesService;
+                });
+
+                // Sorting
+                if (sortVal === 'low') {
+                    filtered.sort((a, b) => a.price - b.price);
+                } else if (sortVal === 'high') {
+                    filtered.sort((a, b) => b.price - a.price);
+                }
+
+                this.renderGrid(filtered);
+            },
+
+            scrollToGrid: function() {
+                document.getElementById('marketplace').scrollIntoView({behavior: 'smooth'});
+                this.filterStylists(); // Ensure filters apply
+            },
+
+            // View Detail Page
+            viewDetail: function(id) {
+                const stylist = this.data.stylists.find(s => s.id === id);
+                if(!stylist) return;
+
+                this.data.selectedStylist = stylist;
+                const content = document.getElementById('detail-content');
+                const priceFormatted = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(stylist.price);
+
+                content.innerHTML = `
+                    <div class="detail-container">
+                        <img src="${stylist.image}" alt="${stylist.name}" class="detail-img">
+                        <div class="detail-info">
+                            <h2>${stylist.name}</h2>
+                            <div class="detail-meta">
+                                <span>📍 ${stylist.location}, Nigeria</span> &bull; 
+                                <span>⭐ ${stylist.rating} (${stylist.reviews} Reviews)</span>
+                            </div>
+                            <div class="tags" style="margin-bottom: 1.5rem;">
+                                <span class="tag">${stylist.specialty}</span>
+                            </div>
+                            
+                            <div class="bio-box">
+                                <h3>About</h3>
+                                <p>${stylist.bio}</p>
+                            </div>
+
+                            <div class="booking-form">
+                                <h3>Book Appointment</h3>
+                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Base Service: ${priceFormatted}</p>
+                                <form onsubmit="app.handleBooking(event)">
+                                    <div class="form-group">
+                                        <label>Your Name</label>
+                                        <input type="text" required placeholder="Enter your name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Preferred Date</label>
+                                        <input type="date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Your Phone Number</label>
+                                        <input type="tel" required placeholder="080X XXX XXXX">
+                                    </div>
+                                    <button type="submit" class="btn-large" style="width: 100%;">Confirm Booking Request</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.navigate('detail');
+            },
+
+            // Handle Booking Submission
+            handleBooking: function(e) {
+                e.preventDefault();
+                // In a real app, this would send data to a server.
+                // Here we simulate a loading state and success.
+                
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = "Processing...";
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    this.showToast(`Booking request sent to ${this.data.selectedStylist.name}!`, 'success');
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    e.target.reset();
+                    this.navigate('home');
+                }, 1500);
+            },
+
+            // Handle Join Form (New Stylist)
+            handleJoin: function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                
+                const newStylist = {
+                    id: Date.now(), // Generate unique ID
+                    name: formData.get('name'),
+                    location: formData.get('state'),
+                    specialty: formData.get('specialty'),
+                    price: parseInt(formData.get('price')),
+                    bio: formData.get('bio'),
+                    rating: 0, // New stylists have no rating yet
+                    reviews: 0,
+                    image: `https://picsum.photos/seed/${Date.now()}/400/300`
+                };
+
+                // Add to data array
+                this.data.stylists.unshift(newStylist); // Add to top
+                
+                // Feedback
+                this.showToast('Welcome to the network! Your profile is live.', 'success');
+                e.target.reset();
+
+                // Refresh grid and go home
+                this.renderGrid(this.data.stylists);
+                this.navigate('home');
+            },
+
+            // Toast Notification System
+            showToast: function(msg, type = 'success') {
+                const toast = document.getElementById('toast');
+                const msgEl = document.getElementById('toast-message');
+                const iconEl = document.getElementById('toast-icon');
+
+                msgEl.textContent = msg;
+                toast.className = `toast show ${type}`;
+                iconEl.textContent = type === 'success' ? '✅' : '⚠️';
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        };
+
+        // Start App
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>

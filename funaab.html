@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FUNAAB WORLD 2.0</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --wa-teal: #008069;
+            --wa-light-teal: #00a884;
+            --wa-bg-color: #d1d7db;
+            --wa-chat-bg: #efeae2;
+            --wa-white: #ffffff;
+            --wa-outgoing-msg: #d9fdd3;
+            --wa-incoming-msg: #ffffff;
+            --wa-gray-text: #667781;
+            --wa-divider: #e9edef;
+            --wa-header-height: 60px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--wa-bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #111b21;
+        }
+
+        /* --- APP CONTAINER (Mobile Simulation) --- */
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            background-color: var(--wa-white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 481px) {
+            #app-container {
+                height: 90vh;
+                border-radius: 12px;
+                border: 1px solid rgba(0,0,0,0.1);
+            }
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--wa-light-teal);
+            color: white;
+            height: var(--wa-header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        #main-content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            background-color: var(--wa-white);
+        }
+
+        .tab-view {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .tab-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- LIST ITEMS (Chats, Calls, Status) --- */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--wa-divider);
+            transition: background 0.2s;
+        }
+
+        .list-item:hover {
+            background-color: #f5f6f6;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            flex-shrink: 0;
+            background-color: #ddd;
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .item-name {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #111b21;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: var(--wa-gray-text);
+        }
+
+        .item-bottom {
+            display: flex;
+            align-items: center;
+        }
+
+        .item-preview {
+            font-size: 0.9rem;
+            color: var(--wa-gray-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background-color: #25d366;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-left: 10px;
+        }
+
+        /* --- EVENT SECTION (Special UI) --- */
+        .event-hero {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #008069, #004d40);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .event-tag {
+            background-color: #ffeb3b;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            align-self: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .event-date {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .event-card {
+            background: white;
+            margin: -30px 16px 16px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .event-detail-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        .event-detail-row svg {
+            margin-right: 12px;
+            color: var(--wa-teal);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--wa-light-teal);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .action-btn:active {
+            background-color: #006653;
+        }
+
+        /* --- STATUS CIRCLES --- */
+        .status-scroller {
+            display: flex;
+            padding: 16px;
+            overflow-x: auto;
+            background-color: var(--wa-white);
+            border-bottom: 1px solid var(--wa-divider);
+        }
+
+        .status-circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 16px;
+            min-width: 70px;
+        }
+
+        .status-ring {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--wa-light-teal);
+            padding: 2px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .status-ring.my-status {
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eee;
+        }
+
+        .status-ring img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .plus-icon {
+            position: absolute;
+            color: var(--wa-light-teal);
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .status-name {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #444;
+        }
+
+        /* --- CHAT VIEW (Overlay) --- */
+        #chat-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--wa-chat-bg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #chat-view.open {
+            transform: translateX(0);
+        }
+
+        .chat-header {
+            background-color: var(--wa-light-teal);
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-back-btn {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* WhatsApp Doodle Placeholder */
+            background-blend-mode: overlay;
+            background-color: #efeae2;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+
+        .msg-in {
+            background-color: var(--wa-incoming-msg);
+            align-self: flex-start;
+            border-top-left-radius: 0;
+        }
+
+        .msg-out {
+            background-color: var(--wa-outgoing-msg);
+            align-self: flex-end;
+            border-top-right-radius: 0;
+        }
+
+        .msg-time {
+            font-size: 0.65rem;
+            color: #999;
+            float: right;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+
+        .chat-input-area {
+            background-color: #f0f2f5;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav {
+            height: 55px;
+            background-color: var(--wa-white);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--wa-gray-text);
+            cursor: pointer;
+            flex: 1;
+            height: 100%;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--wa-light-teal);
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+        
+        .nav-indicator {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background-color: var(--wa-light-teal);
+            border-radius: 0 0 4px 4px;
+            display: none;
+        }
+        
+        .nav-item.active .nav-indicator {
+            display: block;
+        }
+
+        /* --- SEARCH BAR --- */
+        .search-container {
+            background-color: white;
+            padding: 10px;
+            border-bottom: 1px solid var(--wa-divider);
+        }
+
+        .search-input-wrapper {
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            height: 36px;
+        }
+
+        .search-input {
+            border: none;
+            background: transparent;
+            margin-left: 10px;
+            width: 100%;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        /* --- TOAST NOTIFICATION --- */
+        #toast {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #323232;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 200;
+            width: max-content;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        #toast.show {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    
+    <!-- Header -->
+    <header id="main-header">
+        <h1>FUNAAB WORLD 2.0</h1>
+        <div class="header-icons">
+            <button class="icon-btn" aria-label="Search">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            <button class="icon-btn" aria-label="Menu">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        
+        <!-- CHATS TAB -->
+        <section id="tab-chats" class="tab-view active">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#54656f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" class="search-input" placeholder="Search or start new chat" id="chat-search">
+                </div>
+            </div>
+            <div id="chats-list">
+                <!-- Chats injected by JS -->
+            </div>
+        </section>
+
+        <!-- STATUS TAB -->
+        <section id="tab-status" class="tab-view">
+            <div class="status-scroller">
+                <div class="status-circle-container">
+                    <div class="status-ring my-status">
+                        <span class="plus-icon">+</span>
+                    </div>
+                    <span class="status-name">My status</span>
+                </div>
+                <!-- Status items injected by JS -->
+            </div>
+            <div id="status-list">
+                <!-- Recent status updates -->
+            </div>
+        </section>
+
+        <!-- COMMUNITIES TAB -->
+        <section id="tab-communities" class="tab-view">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="#54656f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" class="search-input" placeholder="Search communities">
+                </div>
+            </div>
+            <div id="communities-list">
+                <!-- Communities injected JS -->
+            </div>
+        </section>
+
+        <!-- EVENTS TAB (The "Upcoming Event" Interface) -->
+        <section id="tab-events" class="tab-view">
+            <div class="event-hero">
+                <span class="event-tag">Upcoming Event</span>
+                <div class="event-title">FUNAAB Student Week</div>
+                <div class="event-date">Nov 24th - Nov 30th • Main Bowl</div>
+            </div>
+            
+            <div class="event-card">
+                <h3>About the Event</h3>
+                <p style="font-size: 0.9rem; color: #555; margin-top: 5px; line-height: 1.4;">
+                    Join thousands of students for the biggest annual gathering. Features include sporting competitions, food fair, tech exhibitions, and a music concert.
+                </p>
+                
+                <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                    <div class="event-detail-row">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <span style="font-size: 0.9rem;">Mon, 24 Nov 2024</span>
+                    </div>
+                    <div class="event-detail-row">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span style="font-size: 0.9rem;">9:00 AM - Till Late</span>
+                    </div>
+                    <div class="event-detail-row">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        <span style="font-size: 0.9rem;">FUNAAB Main Bowl, Abeokuta</span>
+                    </div>
+                </div>
+
+                <button class="action-btn" onclick="registerEvent()">I'm Interested</button>
+            </div>
+
+            <!-- Additional Events List -->
+            <h4 style="padding: 0 16px; margin-top: 20px; color: var(--wa-teal);">More Events</h4>
+            <div id="events-list">
+                <!-- List of other events -->
+            </div>
+        </section>
+
+        <!-- CALLS TAB -->
+        <section id="tab-calls" class="tab-view">
+            <div class="list-item" style="background-color: #f0f8ff; border-bottom: none;">
+                <div class="avatar" style="background-color: #d9fdd3; display: flex; align-items: center; justify-content: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#128c7e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <div class="item-info">
+                    <div class="item-top"><span class="item-name">Create call link</span></div>
+                    <div class="item-bottom"><span class="item-preview">Share a link for your WhatsApp call</span></div>
+                </div>
+            </div>
+            <div id="calls-list">
+                <!-- Calls injected by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Chat Overlay View -->
+    <div id="chat-view">
+        <div class="chat-header">
+            <div class="chat-back-btn" onclick="closeChat()">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </div>
+            <img src="" id="chat-header-img" class="avatar" style="width: 40px; height: 40px; margin-right: 10px;">
+            <div style="flex:1">
+                <div id="chat-header-name" style="font-weight: 600; font-size: 1rem;">Name</div>
+                <div style="font-size: 0.75rem; opacity: 0.8;">online</div>
+            </div>
+            <button class="icon-btn">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            <button class="icon-btn">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+            </button>
+        </div>
+        
+        <div id="chat-messages" class="chat-messages">
+            <!-- Messages go here -->
+        </div>
+
+        <div class="chat-input-area">
+            <button class="icon-btn" style="color: #54656f;">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+            </button>
+            <input type="text" id="message-input" class="chat-input" placeholder="Message">
+            <button class="icon-btn" onclick="sendMessage()" style="color: var(--wa-teal);">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="none"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('status')" id="nav-status">
+            <div class="nav-indicator"></div>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            <span class="nav-label">Updates</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('chats')" id="nav-chats">
+            <div class="nav-indicator"></div>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            <span class="nav-label">Chats</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('communities')" id="nav-communities">
+            <div class="nav-indicator"></div>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span class="nav-label">Communities</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('events')" id="nav-events">
+            <div class="nav-indicator"></div>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span class="nav-label">Events</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('calls')" id="nav-calls">
+            <div class="nav-indicator"></div>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span class="nav-label">Calls</span>
+        </div>
+    </nav>
+
+    <!-- Toast Notification -->
+    <div id="toast">Action Successful</div>
+</div>
+
+<script>
+    // --- DATA ---
+    const contacts = [
+        { id: 1, name: "Student Affairs Unit", msg: "Please ensure your tuition is paid before...", time: "10:30 AM", unread: 2, img: "https://picsum.photos/seed/studentaffairs/100/100" },
+        { id: 2, name: "Department President", msg: "Meeting at 4 PM regarding the week.", time: "09:15 AM", unread: 0, img: "https://picsum.photos/seed/pres/100/100" },
+        { id: 3, name: "Course Rep (CSS 201)", msg: "Class has been rescheduled.", time: "Yesterday", unread: 1, img: "https://picsum.photos/seed/css/100/100" },
+        { id: 4, name: "Roommate (Tolu)", msg: "Are you coming to the cafeteria?", time: "Yesterday", unread: 0, img: "https://picsum.photos/seed/tolu/100/100" },
+        { id: 5, name: "VC's Office", msg: "Broadcast: Academic calendar update.", time: "Tuesday", unread: 0, img: "https://picsum.photos/seed/vc/100/100" },
+        { id: 6, name: "FUNAAB Tech Hub", msg: "Welcome to the tech community!", time: "Monday", unread: 0, img: "https://picsum.photos/seed/tech/100/100" },
+        { id: 7, name: "Bisi (Friend)", msg: "How far now?", time: "Monday", unread: 0, img: "https://picsum.photos/seed/bisi/100/100" }
+    ];
+
+    const communities = [
+        { id: 101, name: "FUNAAB General", msg: "Dr. Ben: Notice to all students", time: "10:00 AM", img: "https://picsum.photos/seed/funaab/100/100" },
+        { id: 102, name: "SUG Electoral Comm.", msg: "Election results are out.", time: "Yesterday", img: "https://picsum.photos/seed/sug/100/100" },
+        { id: 103, name: "Campus Fellowship", msg: "Join us for Sunday service.", time: "Friday", img: "https://picsum.photos/seed/church/100/100" }
+    ];
+
+    const statusUpdates = [
+        { name: "Department President", img: "https://picsum.photos/seed/pres/100/100", time: "Today, 10:45 AM" },
+        { name: "Roommate (Tolu)", img: "https://picsum.photos/seed/tolu/100/100", time: "Today, 08:20 AM" },
+        { name: "Bisi (Friend)", img: "https://picsum.photos/seed/bisi/100/100", time: "Yesterday" }
+    ];
+
+    const calls = [
+        { name: "Student Affairs Unit", type: "incoming", time: "10:30 AM", img: "https://picsum.photos/seed/studentaffairs/100/100" },
+        { name: "Mum", type: "missed", time: "Yesterday", img: "https://picsum.photos/seed/mum/100/100" },
+        { name: "Course Rep", type: "outgoing", time: "Tuesday", img: "https://picsum.photos/seed/css/100/100" }
+    ];
+
+    const otherEvents = [
+        { name: "Tech Innovation Fair", date: "Dec 5", location: "SIWES Hall" },
+        { name: "Departmental Dinner", date: "Dec 12", location: "Cafe Royal" }
+    ];
+
+    let activeChatId = null;
+
+    // --- DOM ELEMENTS ---
+    const chatsList = document.getElementById('chats-list');
+    const communitiesList = document.getElementById('communities-list');
+    const statusList = document.getElementById('status-list');
+    const callsList = document.getElementById('calls-list');
+    const eventsList = document.getElementById('events-list');
+    const statusScroller = document.querySelector('.status-scroller');
+    const searchInput = document.getElementById('chat-search');
+    const chatView = document.getElementById('chat-view');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // --- RENDER FUNCTIONS ---
+
+    function renderChats(filterText = '') {
+        chatsList.innerHTML = '';
+        const filtered = contacts.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()));
+        
+        filtered.forEach(c => {
+            const html = `
+                <div class="list-item" onclick="openChat(${c.id})">
+                    <img src="${c.img}" class="avatar" alt="${c.name}">
+                    <div class="item-info">
+                        <div class="item-top">
+                            <span class="item-name">${c.name}</span>
+                            <span class="item-meta">${c.time}</span>
+                        </div>
+                        <div class="item-bottom">
+                            <span class="item-preview">${c.msg}</span>
+                            ${c.unread > 0 ? `<span class="unread-badge">${c.unread}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatsList.innerHTML += html;
+        });
+    }
+
+    function renderCommunities() {
+        communitiesList.innerHTML = '';
+        communities.forEach(c => {
+            const html = `
+                <div class="list-item">
+                    <img src="${c.img}" class="avatar" style="border-radius: 8px;">
+                    <div class="item-info">
+                        <div class="item-top">
+                            <span class="item-name">${c.name}</span>
+                            <span class="item-meta">${c.time}</span>
+                        </div>
+                        <div class="item-bottom">
+                            <span class="item-preview">${c.msg}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            communitiesList.innerHTML += html;
+        });
+    }
+
+    function renderStatus() {
+        // Render scroller circles
+        statusUpdates.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'status-circle-container';
+            div.innerHTML = `
+                <div class="status-ring">
+                    <img src="${s.img}" alt="${s.name}">
+                </div>
+                <span class="status-name">${s.name}</span>
+            `;
+            statusScroller.appendChild(div);
+        });
+
+        // Render text list
+        statusList.innerHTML = '';
+        statusUpdates.forEach(s => {
+            const html = `
+                <div class="list-item">
+                    <img src="${s.img}" class="avatar">
+                    <div class="item-info">
+                        <div class="item-top">
+                            <span class="item-name">${s.name}</span>
+                            <span class="item-meta">${s.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            statusList.innerHTML += html;
+        });
+    }
+
+    function renderCalls() {
+        callsList.innerHTML = '';
+        calls.forEach(c => {
+            let icon = '';
+            if(c.type === 'incoming') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25d366" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>';
+            else if(c.type === 'outgoing') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00a884" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>';
+            else icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dd4545" stroke-width="2"><path d="M10.68 13.31a16 16 0 0 0 6.9 6.9l2.2-2.2a1 1 0 0 1 1.1-.27 11.36 11.36 0 0 0 4.17 1.05 1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1A19 19 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 1.05 4.17 1 1 0 0 1-.27 1.1z"></path></svg>';
+
+            const html = `
+                <div class="list-item">
+                    <img src="${c.img}" class="avatar">
+                    <div class="item-info">
+                        <div class="item-top">
+                            <span class="item-name">${c.name}</span>
+                            <span class="item-meta">${c.time}</span>
+                        </div>
+                        <div class="item-bottom" style="color: ${c.type === 'missed' ? '#dd4545' : '#667781'}">
+                            ${icon}
+                            <span style="margin-left: 8px; font-size: 0.9rem;">${c.type === 'missed' ? 'Missed call' : c.type}</span>
+                        </div>
+                    </div>
+                    <button class="icon-btn" style="color: var(--wa-teal);">
+                         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </button>
+                </div>
+            `;
+            callsList.innerHTML += html;
+        });
+    }
+
+    function renderOtherEvents() {
+        eventsList.innerHTML = '';
+        otherEvents.forEach(e => {
+            const html = `
+                <div class="list-item">
+                    <div style="width: 50px; height: 50px; background: #e6fffa; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--wa-teal); flex-direction: column; line-height: 1;">
+                        <span style="font-size: 0.7rem; text-transform: uppercase;">${e.date.split(' ')[0]}</span>
+                        <span style="font-weight: bold; font-size: 1rem;">${e.date.split(' ')[1]}</span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-top">
+                            <span class="item-name">${e.name}</span>
+                        </div>
+                        <div class="item-bottom">
+                            <span class="item-preview">${e.location}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            eventsList.innerHTML += html;
+        });
+    }
+
+    // --- INTERACTION LOGIC ---
+
+    function switchTab(tabId) {
+        // Remove active class from all tabs and contents
+        document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+        // Add active to selected
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        document.getElementById(`nav-${tabId}`).classList.add('active');
+    }
+
+    function openChat(id) {
+        const contact = contacts.find(c => c.id === id);
+        if (!contact) return;
+
+        activeChatId = id;
+        document.getElementById('chat-header-name').innerText = contact.name;
+        document.getElementById('chat-header-img').src = contact.img;
+        
+        // Mock Messages
+        chatMessages.innerHTML = `
+            <div style="text-align: center; font-size: 0.75rem; color: #888; margin: 10px 0;">Today, 9:41 AM</div>
+            <div class="message-bubble msg-in">
+                Hello! This is a simulated chat for <b>${contact.name}</b>.
+                <div class="msg-time">10:20 AM</div>
+            </div>
+             <div class="message-bubble msg-in">
+                ${contact.msg}
+                <div class="msg-time">${contact.time}</div>
+            </div>
+        `;
+
+        chatView.classList.add('open');
+    }
+
+    function closeChat() {
+        chatView.classList.remove('open');
+        activeChatId = null;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // Add outgoing message
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const msgHtml = `
+            <div class="message-bubble msg-out">
+                ${text}
+                <div class="msg-time">${time}</div>
+            </div>
+        `;
+        chatMessages.insertAdjacentHTML('beforeend', msgHtml);
+        input.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Mock reply after 1 second
+        setTimeout(() => {
+            const replyHtml = `
+                <div class="message-bubble msg-in">
+                    Thanks for reaching out via FUNAAB World 2.0! This is an automated reply.
+                    <div class="msg-time">${time}</div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', replyHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000);
+    }
+    
+    function registerEvent() {
+        showToast("Registered! You will receive reminders.");
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Search Listener
+    searchInput.addEventListener('input', (e) => {
+        renderChats(e.target.value);
+    });
+
+    // Initialize
+    renderChats();
+    renderCommunities();
+    renderStatus();
+    renderCalls();
+    renderOtherEvents();
+    
+    // Set default tab
+    switchTab('chats');
+
+</script>
+
+</body>
+</html>

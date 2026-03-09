@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewDAV WEST STYLIST</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            /* Palette based on user request */
+            --lemon-green: #DFFF00;
+            --yellow: #FFD700;
+            --blue: #1E90FF;
+            --pink: #FF69B4;
+            
+            --bg-light: #f4f7f6;
+            --text-dark: #333;
+            --text-light: #fff;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* App-like feel */
+        }
+
+        /* --- ICON STYLING --- */
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--blue) 0deg 90deg, 
+                var(--pink) 90deg 180deg, 
+                var(--lemon-green) 180deg 270deg, 
+                var(--yellow) 270deg 360deg
+            );
+            display: inline-block;
+            margin-right: 10px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--blue);
+            color: var(--text-light);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .user-mode-toggle {
+            background: rgba(255,255,255,0.2);
+            padding: 5px;
+            border-radius: 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .mode-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            padding: 5px 15px;
+            cursor: pointer;
+            border-radius: 15px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .mode-btn.active {
+            background-color: var(--lemon-green);
+            color: var(--text-dark);
+        }
+
+        /* --- MAIN LAYOUT (Two Columns) --- */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* --- LEFT COLUMN (Sidebar) --- */
+        .sidebar {
+            width: 300px;
+            background-color: #fff;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            color: var(--blue);
+            border-bottom: 2px solid var(--pink);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .action-card {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .action-card:hover {
+            border-color: var(--blue);
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--blue);
+            color: white;
+        }
+        .btn-primary:hover { background-color: #007bff; }
+
+        .btn-secondary {
+            background-color: var(--yellow);
+            color: #333;
+        }
+        .btn-secondary:hover { background-color: #e6c200; }
+
+        .btn-danger {
+            background-color: var(--pink);
+            color: white;
+        }
+        .btn-danger:hover { background-color: #ff1493; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* --- RIGHT COLUMN (Content) --- */
+        .content-area {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+
+        .search-bar-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .search-input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .location-btn {
+            background-color: var(--lemon-green);
+            color: #333;
+            border: none;
+            padding: 0 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Stylist Cards Grid */
+        .stylist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stylist-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stylist-card:hover {
+            transform: translateY(-5px);
+            border: 1px solid var(--blue);
+        }
+
+        .stylist-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: #ddd;
+        }
+
+        .stylist-info {
+            padding: 15px;
+            flex: 1;
+        }
+
+        .stylist-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .stylist-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .distance-badge {
+            background-color: var(--yellow);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .stylist-actions {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Booking List (Stylist View) */
+        .booking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .booking-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--blue);
+            box-shadow: var(--card-shadow);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .status.pending { background-color: #ffeeba; color: #856404; }
+        .status.confirmed { background-color: #d4edda; color: #155724; }
+        .status.cancelled { background-color: #f8d7da; color: #721c24; }
+
+        .client-details p {
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .booking-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal h2 {
+            margin-bottom: 15px;
+            color: var(--blue);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 5px solid var(--blue);
+            animation: slideIn 0.3s ease-out;
+            min-width: 250px;
+        }
+        
+        .toast.success { border-left-color: var(--lemon-green); }
+        .toast.error { border-left-color: var(--pink); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #eee; }
+            .content-area { overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="app-icon"></div>
+            <span>NewDAV WEST STYLIST</span>
+        </div>
+        <div class="user-mode-toggle">
+            <button class="mode-btn active" id="btn-mode-client" onclick="switchMode('client')">Client</button>
+            <button class="mode-btn" id="btn-mode-stylist" onclick="switchMode('stylist')">Stylist</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Left Column: Sidebar / Tools -->
+        <aside class="sidebar">
+            <div id="client-sidebar-content">
+                <h3>For Clients</h3>
+                <p style="margin-bottom: 10px; font-size: 0.9rem; color: #666;">Find the best hair stylists in Western Nigeria.</p>
+                <div class="action-card">
+                    <h4>Quick Tips</h4>
+                    <p style="font-size: 0.85rem; margin-top:5px;">Use the location button to find stylists closest to you.</p>
+                </div>
+            </div>
+
+            <div id="stylist-sidebar-content" style="display: none;">
+                <h3>Stylist Portal</h3>
+                <div class="action-card">
+                    <h4>Registration</h4>
+                    <p style="font-size: 0.85rem; margin-bottom: 10px;">Not listed? Join the community.</p>
+                    <button class="btn btn-primary" onclick="openModal('register-modal')">Register as Stylist</button>
+                </div>
+                <div class="action-card">
+                    <h4>Your Stats</h4>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span>Pending:</span>
+                        <span id="stylist-pending-count" style="font-weight: bold;">0</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Column: Content Area -->
+        <main class="content-area">
+            
+            <!-- Client View: Search & List -->
+            <div id="client-view">
+                <div class="search-bar-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search stylist name or location (e.g., Ibadan, Ikeja)...">
+                    <button class="location-btn" onclick="findNearestStylists()" title="Use my current location">
+                        📍 Nearest
+                    </button>
+                    <button class="btn-primary" style="width: auto; margin:0;" onclick="performSearch()">Search</button>
+                </div>
+
+                <h2 style="margin-bottom: 20px; color: var(--text-dark);">Available Stylists</h2>
+                <div class="stylist-grid" id="stylist-list">
+                    <!-- Stylist cards injected by JS -->
+                </div>
+            </div>
+
+            <!-- Stylist View: Bookings Dashboard -->
+            <div id="stylist-view" style="display: none;">
+                <h2 style="margin-bottom: 20px; color: var(--text-dark);">Incoming Bookings</h2>
+                <div class="booking-list" id="stylist-bookings">
+                    <!-- Booking cards injected by JS -->
+                    <p style="text-align: center; color: #999;">No pending bookings.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Booking Modal -->
+    <div class="modal-overlay" id="booking-modal">
+        <div class="modal">
+            <span class="close-modal" onclick="closeModal('booking-modal')">&times;</span>
+            <h2>Book Appointment</h2>
+            <p id="booking-stylist-name" style="margin-bottom: 15px; font-weight: bold; color: var(--blue);"></p>
+            
+            <form id="booking-form" onsubmit="submitBooking(event)">
+                <input type="hidden" id="booking-stylist-id">
+                
+                <label class="label">Service Required</label>
+                <select id="service-type" required>
+                    <option value="Braids">Braids</option>
+                    <option value="Weave-on">Weave-on</option>
+                    <option value="Natural Hair Care">Natural Hair Care</option>
+                    <option value="Haircut">Haircut / Barbering</option>
+                    <option value="Coloring">Coloring</option>
+                </select>
+
+                <label class="label">Preferred Date</label>
+                <input type="date" id="booking-date" required>
+
+                <label class="label">Phone Number</label>
+                <input type="tel" id="client-phone" placeholder="e.g. 08012345678" required>
+
+                <label class="label">House Address</label>
+                <input type="text" id="client-address" placeholder="Street name, number" required>
+
+                <label class="label">Nearest Landmark</label>
+                <input type="text" id="client-landmark" placeholder="e.g. Opposite Market" required>
+
+                <button type="submit" class="btn btn-primary">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="register-modal">
+        <div class="modal">
+            <span class="close-modal" onclick="closeModal('register-modal')">&times;</span>
+            <h2>Join NewDAV West</h2>
+            <p style="margin-bottom: 15px; font-size: 0.9rem;">Register to start receiving clients.</p>
+            
+            <form id="register-form" onsubmit="submitRegistration(event)">
+                <label class="label">Full Name</label>
+                <input type="text" id="reg-name" required>
+
+                <label class="label">Location (City/Area)</label>
+                <input type="text" id="reg-location" placeholder="e.g. Abeokuta" required>
+
+                <label class="label">Specialty</label>
+                <input type="text" id="reg-specialty" placeholder="e.g. Ghana Weaving" required>
+
+                <button type="submit" class="btn btn-secondary">Register Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // --- DATA & STATE ---
+        const state = {
+            currentMode: 'client', // 'client' or 'stylist'
+            currentUser: 'Client User', // In a real app, this comes from auth
+            currentLocation: null // Holds lat/lon
+        };
+
+        // Mock Database of Stylists (Western Nigeria context)
+        let stylists = [
+            { id: 1, name: "Bimpe's Touch", location: "Ikeja, Lagos", specialty: "Braids & Weaves", rating: 4.8, lat: 6.6018, lon: 3.3515, image: "https://picsum.photos/seed/bimpe/300/200" },
+            { id: 2, name: "Oyo Empire Styles", location: "Ibadan, Oyo", specialty: "Natural Hair", rating: 4.5, lat: 7.3775, lon: 3.9470, image: "https://picsum.photos/seed/oyo/300/200" },
+            { id: 3, name: "Abeokuta Kinky", location: "Abeokuta, Ogun", specialty: "Kinky Twists", rating: 4.9, lat: 7.3075, lon: 3.3675, image: "https://picsum.photos/seed/abeokuta/300/200" },
+            { id: 4, name: "Elegant Gold", location: "Akure, Ondo", specialty: "Wedding Styles", rating: 4.7, lat: 7.2526, lon: 5.1960, image: "https://picsum.photos/seed/gold/300/200" },
+            { id: 5, name: "Port Harcourt connect", location: "Port Harcourt", specialty: "Braids", rating: 4.6, lat: 4.8156, lon: 7.0498, image: "https://picsum.photos/seed/ph/300/200" },
+            { id: 6, name: "Benin Royal Braids", location: "Benin City", specialty: "Cornrows", rating: 4.4, lat: 6.3350, lon: 5.6037, image: "https://picsum.photos/seed/benin/300/200" }
+        ];
+
+        // Mock Database of Bookings
+        let bookings = [
+            { id: 101, stylistId: 2, clientName: "Tunde Smith", service: "Braids", phone: "08022222222", address: "12 Awolowo Rd", landmark: "UI Gate", date: "2023-11-20", status: "pending" }
+        ];
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderStylistList(stylists);
+            updateStylistDashboard();
+        });
+
+        // --- NAVIGATION / MODE SWITCHING ---
+        function switchMode(mode) {
+            state.currentMode = mode;
+            
+            // Toggle Buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-mode-${mode}`).classList.add('active');
+
+            // Toggle Sidebar Content
+            document.getElementById('client-sidebar-content').style.display = mode === 'client' ? 'block' : 'none';
+            document.getElementById('stylist-sidebar-content').style.display = mode === 'stylist' ? 'block' : 'none';
+
+            // Toggle Main Content
+            document.getElementById('client-view').style.display = mode === 'client' ? 'block' : 'none';
+            document.getElementById('stylist-view').style.display = mode === 'stylist' ? 'block' : 'none';
+
+            if (mode === 'stylist') {
+                updateStylistDashboard();
+                showToast("Welcome to Stylist Portal", "success");
+            } else {
+                renderStylistList(stylists);
+            }
+        }
+
+        // --- CLIENT FEATURES ---
+        
+        function renderStylistList(list) {
+            const container = document.getElementById('stylist-list');
+            container.innerHTML = '';
+
+            if (list.length === 0) {
+                container.innerHTML = `<p style="color:#666;">No stylists found matching your criteria.</p>`;
+                return;
+            }
+
+            list.forEach(stylist => {
+                // Add random distance if not calculated
+                const dist = stylist.distance 
+                    ? `${stylist.distance.toFixed(1)} km` 
+                    : 'Location unknown';
+
+                const card = document.createElement('div');
+                card.className = 'stylist-card';
+                card.innerHTML = `
+                    <img src="${stylist.image}" alt="${stylist.name}" class="stylist-img">
+                    <div class="stylist-info">
+                        <div class="stylist-name">${stylist.name}</div>
+                        <div class="stylist-meta">📍 ${stylist.location}</div>
+                        <div class="stylist-meta">✂️ ${stylist.specialty}</div>
+                        <div class="stylist-meta">⭐ ${stylist.rating} <span class="distance-badge">📍 ${dist}</span></div>
+                    </div>
+                    <div class="stylist-actions">
+                        <button class="btn btn-primary" onclick="openBookingModal(${stylist.id})">Book Appointment</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function performSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = stylists.filter(s => 
+                s.name.toLowerCase().includes(query) || 
+                s.location.toLowerCase().includes(query) ||
+                s.specialty.toLowerCase().includes(query)
+            );
+            renderStylistList(filtered);
+        }
+
+        function findNearestStylists() {
+            const btn = document.querySelector('.location-btn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = "Locating...";
+            btn.disabled = true;
+
+            // Simulate Geolocation API
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Success - Simulate User Location (e.g., somewhere in Ibadan)
+                        // In a real app, use position.coords.latitude and longitude
+                        const userLat = 7.3775; 
+                        const userLon = 3.9470;
+
+                        // Calculate distances and sort
+                        const stylistsWithDist = stylists.map(s => {
+                            const d = getDistanceFromLatLonInKm(userLat, userLon, s.lat, s.lon);
+                            return { ...s, distance: d };
+                        }).sort((a, b) => a.distance - b.distance);
+
+                        renderStylistList(stylistsWithDist);
+                        showToast(`Found ${stylistsWithDist.length} stylists near you!`, "success");
+                        
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    },
+                    (error) => {
+                        // Error handling
+                        showToast("Location access denied. Showing default list.", "error");
+                        // Fallback: Shuffle list to simulate sorting
+                        const shuffled = [...stylists].sort(() => 0.5 - Math.random());
+                        shuffled.forEach(s => s.distance = (Math.random() * 20 + 1)); // Fake random distance
+                        shuffled.sort((a,b) => a.distance - b.distance);
+                        renderStylistList(shuffled);
+                        
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                );
+            } else {
+                showToast("Geolocation not supported by this browser.", "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Haversine formula for distance
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2-lat1);  
+            var dLon = deg2rad(lon2-lon1); 
+            var a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c; // Distance in km
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+
+        // --- BOOKING LOGIC ---
+
+        function openBookingModal(stylistId) {
+            const stylist = stylists.find(s => s.id === stylistId);
+            document.getElementById('booking-stylist-name').innerText = `Booking with: ${stylist.name}`;
+            document.getElementById('booking-stylist-id').value = stylistId;
+            // Set date input min to today
+            document.getElementById('booking-date').min = new Date().toISOString().split("T")[0];
+            
+            openModal('booking-modal');
+        }
+
+        function submitBooking(e) {
+            e.preventDefault();
+            
+            const stylistId = parseInt(document.getElementById('booking-stylist-id').value);
+            const service = document.getElementById('service-type').value;
+            const date = document.getElementById('booking-date').value;
+            const phone = document.getElementById('client-phone').value;
+            const address = document.getElementById('client-address').value;
+            const landmark = document.getElementById('client-landmark').value;
+
+            // Create Booking Object
+            const newBooking = {
+                id: Date.now(),
+                stylistId: stylistId,
+                clientName: state.currentUser,
+                service,
+                date,
+                phone,
+                address,
+                landmark,
+                status: 'pending'
+            };
+
+            bookings.push(newBooking);
+            
+            closeModal('booking-modal');
+            e.target.reset();
+            showToast("Booking Request Sent Successfully!", "success");
+            
+            // If we were in stylist mode, update dashboard, otherwise just saved
+            updateStylistDashboard();
+        }
+
+        // --- STYLIST FEATURES ---
+
+        function submitRegistration(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const location = document.getElementById('reg-location').value;
+            const specialty = document.getElementById('reg-specialty').value;
+
+            const newStylist = {
+                id: Date.now(),
+                name,
+                location,
+                specialty,
+                rating: 0.0, // New rating
+                lat: 0, lon: 0, // Unknown location
+                image: `https://picsum.photos/seed/${name}/300/200`,
+                distance: null
+            };
+
+            stylists.push(newStylist);
+            closeModal('register-modal');
+            e.target.reset();
+            showToast("Registration Successful! You are now visible.", "success");
+            
+            // Simulating that the current user IS this new stylist for the demo
+            // In a real app, we would link the User ID to the Stylist ID
+            showToast("Try switching to Client view to search for yourself!", "success");
+        }
+
+        function updateStylistDashboard() {
+            const container = document.getElementById('stylist-bookings');
+            const pendingCount = document.getElementById('stylist-pending-count');
+            
+            // Filter bookings. Since we don't have a real login, we show ALL bookings for demonstration
+            // In a real app: bookings.filter(b => b.stylistId === currentStylistId)
+            
+            const myBookings = bookings; 
+
+            const pending = myBookings.filter(b => b.status === 'pending');
+            pendingCount.innerText = pending.length;
+
+            container.innerHTML = '';
+
+            if (myBookings.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#666;">No bookings found.</p>`;
+                return;
+            }
+
+            // Sort by pending first
+            myBookings.sort((a,b) => (a.status === 'pending' ? -1 : 1));
+
+            myBookings.forEach(booking => {
+                const stylist = stylists.find(s => s.id === booking.stylistId) || { name: 'Unknown Stylist' };
+                const card = document.createElement('div');
+                card.className = 'booking-card';
+                
+                let actionButtons = '';
+                if(booking.status === 'pending') {
+                    actionButtons = `
+                        <button class="btn btn-primary" style="width:auto; flex:1;" onclick="updateBookingStatus(${booking.id}, 'confirmed')">Confirm</button>
+                        <button class="btn btn-danger" style="width:auto; flex:1;" onclick="updateBookingStatus(${booking.id}, 'cancelled')">Cancel</button>
+                    `;
+                } else {
+                    actionButtons = `<span style="font-size:0.85rem; color:#666;">Action completed</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="booking-header">
+                        <span style="font-weight:bold; color:var(--blue);">Request #${booking.id}</span>
+                        <span class="status ${booking.status}">${booking.status}</span>
+                    </div>
+                    <div class="client-details">
+                        <p><span class="label">Service:</span> ${booking.service}</p>
+                        <p><span class="label">Date:</span> ${booking.date}</p>
+                        <p><span class="label">Client:</span> ${booking.clientName}</p>
+                        <p><span class="label">Phone:</span> <a href="tel:${booking.phone}" style="color:var(--blue);">${booking.phone}</a></p>
+                        <p><span class="label">Address:</span> ${booking.address}</p>
+                        <p><span class="label">Landmark:</span> ${booking.landmark}</p>
+                    </div>
+                    <div class="booking-actions">
+                        ${actionButtons}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateBookingStatus(bookingId, newStatus) {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+                booking.status = newStatus;
+                updateStylistDashboard();
+                
+                const msg = newStatus === 'confirmed' ? "Booking Confirmed!" : "Booking Cancelled.";
+                const type = newStatus === 'confirmed' ? "success" : "error";
+                showToast(msg, type);
+            }
+        }
+
+        // --- UTILS: MODALS & TOASTS ---
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            
+            container.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('open');
+            }
+        }
+    </script>
+</body>
+</html>

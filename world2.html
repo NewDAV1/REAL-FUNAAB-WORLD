@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FUNAAB WORLD 2.0</title>
+    <style>
+        :root {
+            --primary-green: #00a884;
+            --secondary-green: #008069;
+            --bg-color: #d1d7db;
+            --chat-bg: #efeae2;
+            --white: #ffffff;
+            --grey-light: #f0f2f5;
+            --text-primary: #111b21;
+            --text-secondary: #667781;
+            --incoming-bubble: #ffffff;
+            --outgoing-bubble: #d9fdd3;
+            --border-color: #e9edef;
+            --danger: #ef5350;
+            --blue: #53bdeb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* App Container (Mobile Simulator) */
+        #app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 480px) {
+            #app-container {
+                height: 90vh;
+                border-radius: 20px;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* --- Screens --- */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--white);
+            z-index: 10;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- Registration Screen --- */
+        #register-screen {
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+        }
+
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 32px;
+        }
+
+        .register-form input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-green);
+        }
+
+        /* --- Main App Header --- */
+        header {
+            background-color: var(--primary-green);
+            padding: 10px 15px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .header-icons span {
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* --- Search Bar --- */
+        .search-bar {
+            background-color: var(--white);
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input-wrapper {
+            background-color: var(--grey-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 7px 15px;
+        }
+
+        .search-input-wrapper input {
+            border: none;
+            background: transparent;
+            margin-left: 10px;
+            width: 100%;
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* --- Content Area --- */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--white);
+            position: relative;
+        }
+
+        /* --- List Items (Chats, Events, Skills) --- */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .list-item:active {
+            background-color: #f5f5f5;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 15px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0; /* Text truncation fix */
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .item-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .item-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .item-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .badge {
+            background-color: #25d366;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+
+        /* --- FAB (Floating Action Button) --- */
+        .fab {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background-color: var(--primary-green);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.2s;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        /* --- Tab Navigation --- */
+        .tab-bar {
+            background-color: var(--grey-light);
+            height: 60px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 20%;
+        }
+
+        .tab-item.active {
+            color: var(--primary-green);
+        }
+
+        .tab-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        /* --- Modals --- */
+        .modal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            z-index: 200;
+        }
+
+        .modal.open {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            color: var(--primary-green);
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* --- Chat Detail View --- */
+        #chat-view {
+            background-color: var(--chat-bg);
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* WhatsApp Doodle Placeholder */
+            background-blend-mode: overlay;
+            z-index: 50; /* Above main content */
+        }
+        
+        #chat-view header {
+            background-color: var(--secondary-green);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            line-height: 1.4;
+        }
+
+        .message.incoming {
+            align-self: flex-start;
+            background-color: var(--incoming-bubble);
+            border-top-left-radius: 0;
+        }
+
+        .message.outgoing {
+            align-self: flex-end;
+            background-color: var(--outgoing-bubble);
+            border-top-right-radius: 0;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            color: rgba(0,0,0,0.45);
+            float: right;
+            margin-top: 5px;
+            margin-left: 8px;
+        }
+
+        .chat-input-area {
+            padding: 10px;
+            background-color: var(--grey-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+
+        /* --- Consensus AI Overlay --- */
+        .ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        #ai-modal {
+            height: 90%;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-content {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .ai-bubble {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 14px;
+        }
+
+        .ai-bubble.user {
+            background: #e0e7ff;
+            margin-left: 20px;
+        }
+
+        /* --- Toast Notification --- */
+        #toast {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 300;
+            text-align: center;
+            width: max-content;
+            max-width: 80%;
+        }
+
+        #toast.show {
+            opacity: 1;
+        }
+
+        /* --- Empty States --- */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.5;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    
+    <!-- 1. REGISTRATION SCREEN -->
+    <div id="register-screen" class="screen active">
+        <div class="brand-logo">FW</div>
+        <h2 style="color:white; margin-bottom: 10px;">Welcome to FUNAAB WORLD 2.0</h2>
+        <p style="color:rgba(255,255,255,0.8); margin-bottom: 40px;">Connect, Learn, and Grow.</p>
+        
+        <div class="register-form">
+            <input type="text" id="reg-name" placeholder="Full Name (e.g. Ade Okafor)">
+            <input type="text" id="reg-matric" placeholder="Matric Number (e.g. COS/20/0012)">
+            <input type="tel" id="reg-phone" placeholder="Phone Number">
+            <button class="btn-primary" onclick="handleRegistration()">Register & Continue</button>
+        </div>
+        <p style="margin-top: 20px; font-size: 12px; color: rgba(255,255,255,0.6);">
+            By registering, you agree to connect with the Student Affairs Unit and peers.
+        </p>
+    </div>
+
+    <!-- 2. MAIN APP SCREEN -->
+    <div id="main-screen" class="screen">
+        
+        <!-- Header -->
+        <header>
+            <h1 id="header-title">FUNAAB World</h1>
+            <div class="header-icons">
+                <span id="ai-trigger" class="ai-badge" onclick="openAIModal()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" /></svg>
+                    Consensus AI
+                </span>
+                <span>⋮</span>
+            </div>
+        </header>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#667781"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+                <input type="text" id="global-search" placeholder="Search students, events, skills..." onkeyup="filterContent()">
+            </div>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <div class="content-area" id="main-content">
+            <!-- Lists injected via JS -->
+        </div>
+
+        <!-- FAB (Context Aware) -->
+        <div id="fab" class="fab" onclick="handleFabClick()">+</div>
+
+        <!-- Bottom Tab Navigation -->
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchTab('chats')">
+                <span class="tab-icon">💬</span>
+                <span>Chats</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('status')">
+                <span class="tab-icon">⭕</span>
+                <span>Status</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('communities')">
+                <span class="tab-icon">👥</span>
+                <span>Communities</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('events')">
+                <span class="tab-icon">📅</span>
+                <span>Events</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('skills')">
+                <span class="tab-icon">🛠</span>
+                <span>Skills</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CHAT DETAIL VIEW -->
+    <div id="chat-view" class="screen">
+        <header>
+            <div style="display:flex; align-items:center;">
+                <span style="margin-right:10px;" onclick="closeChat()">⬅</span>
+                <div style="text-align:left;">
+                    <h1 id="chat-title">User Name</h1>
+                    <span style="font-size:12px; opacity:0.8;">online</span>
+                </div>
+            </div>
+            <div class="header-icons">
+                <span>📞</span>
+                <span>📹</span>
+            </div>
+        </header>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages go here -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="msg-input" placeholder="Message">
+            <button onclick="sendMessage()" style="background:none; border:none; cursor:pointer;">➤</button>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Add Event Modal (For Officials) -->
+    <div id="event-modal" class="modal">
+        <div class="modal-header">
+            <span class="modal-title">New Event</span>
+            <button class="close-modal" onclick="toggleModal('event-modal')">Cancel</button>
+        </div>
+        <div class="form-group">
+            <label>Event Title</label>
+            <input type="text" id="event-title" class="form-control" placeholder="e.g. Exam Timetable Release">
+        </div>
+        <div class="form-group">
+            <label>Date & Time</label>
+            <input type="text" id="event-date" class="form-control" placeholder="e.g. Tomorrow, 10 AM">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="event-desc" class="form-control" rows="3" placeholder="Important details..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="addEvent()">Post Event</button>
+    </div>
+
+    <!-- Add Skill Modal (For Students) -->
+    <div id="skill-modal" class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Advertise Skill</span>
+            <button class="close-modal" onclick="toggleModal('skill-modal')">Cancel</button>
+        </div>
+        <div class="form-group">
+            <label>Skill / Service</label>
+            <input type="text" id="skill-title" class="form-control" placeholder="e.g. Graphic Design">
+        </div>
+        <div class="form-group">
+            <label>Price / Rate</label>
+            <input type="text" id="skill-price" class="form-control" placeholder="e.g. ₦2000 per design">
+        </div>
+        <div class="form-group">
+            <label>Details</label>
+            <textarea id="skill-desc" class="form-control" rows="3" placeholder="Briefly describe what you do..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="addSkill()">Post Ad</button>
+    </div>
+
+    <!-- Consensus AI Modal -->
+    <div id="ai-modal" class="modal" style="height: 100%; border-radius: 0; z-index: 500;">
+        <div class="modal-header">
+            <span class="modal-title">Research Assistant (Consensus AI)</span>
+            <button class="close-modal" onclick="toggleModal('ai-modal')">Close</button>
+        </div>
+        <div class="ai-content" id="ai-chat-box">
+            <div class="ai-bubble">
+                Hello! I'm linked to Consensus AI. I can help you find research papers, summarize topics, or assist with your studies. What are you looking for?
+                <br><br>
+                <a href="https://consensus.ai/" target="_blank" style="color: #667eea; text-decoration: underline;">Open Consensus.ai Web Search</a>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top: auto;">
+            <input type="text" id="ai-input" class="form-control" placeholder="Ask a research question...">
+            <button class="btn-primary" style="width: auto; padding: 0 20px;" onclick="sendAIMessage()">Search</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast">Message sent!</div>
+
+</div>
+
+<script>
+    // --- DATA STORE ---
+    const state = {
+        currentUser: null,
+        activeTab: 'chats',
+        chats: [
+            { id: 1, name: 'Student Affairs Unit', msg: 'Please ensure you register your courses.', time: '10:30 AM', avatar: 'https://picsum.photos/seed/sa/50/50', unread: 2, type: 'official' },
+            { id: 2, name: 'Department President', msg: 'Meeting holds at the auditorium by 2 PM.', time: '09:15 AM', avatar: 'https://picsum.photos/seed/pres/50/50', unread: 0, type: 'student' },
+            { id: 3, name: 'Study Group (COD)', msg: 'Tolu: Has anyone solved question 4?', time: 'Yesterday', avatar: 'https://picsum.photos/seed/cod/50/50', unread: 5, type: 'group' },
+            { id: 4, name: 'Mum', msg: 'How is school going?', time: 'Yesterday', avatar: 'https://picsum.photos/seed/mum/50/50', unread: 0, type: 'personal' },
+            { id: 5, name: 'Room 404 Hub', msg: 'Bola: Light is back!', time: 'Tuesday', avatar: 'https://picsum.photos/seed/404/50/50', unread: 0, type: 'group' }
+        ],
+        events: [
+            { id: 1, title: 'MATRICULATION CEREMONY', date: 'Friday, 9:00 AM', desc: 'Mandatory for all freshers. Venue: Main Bowl.', type: 'official' },
+            { id: 2, title: 'Tech Skill Workshop', date: 'Saturday, 10:00 AM', desc: 'Learn Python basics. Bring your laptop.', type: 'student' },
+            { id: 3, title: 'Exam Timetable Release', date: 'TBA', desc: 'Check notice board for updates.', type: 'official' }
+        ],
+        skills: [
+            { id: 1, name: 'Chinedu Okafor', skill: 'Logo Design & Branding', price: '₦3,000', desc: 'Professional logos in 24 hours.', avatar: 'https://picsum.photos/seed/skill1/50/50' },
+            { id: 2, name: 'Sarah Adeyemi', skill: 'Photography', price: '₦5,000/hr', desc: 'Portrait and event photography.', avatar: 'https://picsum.photos/seed/skill2/50/50' },
+            { id: 3, name: 'Cyber Cafe (Bookshop)', skill: 'Printing & Typing', price: '₦50/page', desc: 'Fast printing behind the library.', avatar: 'https://picsum.photos/seed/skill3/50/50' }
+        ]
+    };
+
+    // --- AUTH & NAVIGATION ---
+
+    function handleRegistration() {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+
+        if(!name || !phone) {
+            showToast("Please fill in your details");
+            return;
+        }
+
+        state.currentUser = { name, phone };
+        
+        // Switch screen
+        document.getElementById('register-screen').classList.remove('active');
+        document.getElementById('main-screen').classList.add('active');
+        
+        // Initial render
+        switchTab('chats');
+        showToast("Welcome to FUNAAB WORLD 2.0");
+    }
+
+    function switchTab(tabName) {
+        state.activeTab = tabName;
+        
+        // Update Tab UI
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        const tabIndex = ['chats', 'status', 'communities', 'events', 'skills'].indexOf(tabName);
+        if(tabIndex >= 0) {
+            document.querySelectorAll('.tab-item')[tabIndex].classList.add('active');
+        }
+
+        // Update Header
+        const titles = {
+            'chats': 'Chats',
+            'status': 'Status',
+            'communities': 'Communities',
+            'events': 'Upcoming Events',
+            'skills': 'Student Skills'
+        };
+        document.getElementById('header-title').innerText = titles[tabName];
+
+        // Update FAB Visibility
+        const fab = document.getElementById('fab');
+        if (tabName === 'events' || tabName === 'skills') {
+            fab.style.display = 'flex';
+        } else {
+            fab.style.display = 'none';
+        }
+
+        renderContent();
+    }
+
+    function renderContent() {
+        const container = document.getElementById('main-content');
+        container.innerHTML = '';
+        const search = document.getElementById('global-search').value.toLowerCase();
+
+        if (state.activeTab === 'chats') {
+            state.chats.forEach(chat => {
+                if(chat.name.toLowerCase().includes(search)) {
+                    container.innerHTML += createListItem(chat.name, chat.msg, chat.time, chat.avatar, chat.unread);
+                }
+            });
+        } 
+        else if (state.activeTab === 'status') {
+            container.innerHTML = `<div class="empty-state">
+                <span class="empty-icon">⭕</span>
+                <p>No recent status updates.</p>
+            </div>`;
+        }
+        else if (state.activeTab === 'communities') {
+             const communities = [
+                { name: 'FUNAAB Official', msg: 'Student Affairs Unit: Important Notice', time: '10:00 AM', avatar: 'https://picsum.photos/seed/funaab/50/50' },
+                { name: 'Department of Physics', msg: 'Dr. Ayo: Class rescheduled', time: '08:00 AM', avatar: 'https://picsum.photos/seed/phy/50/50' }
+            ];
+            communities.forEach(c => {
+                if(c.name.toLowerCase().includes(search)) {
+                    container.innerHTML += createListItem(c.name, c.msg, c.time, c.avatar, 0, true);
+                }
+            });
+        }
+        else if (state.activeTab === 'events') {
+            state.events.forEach(ev => {
+                if(ev.title.toLowerCase().includes(search)) {
+                    // Custom Event Item
+                    const icon = ev.type === 'official' ? '📢' : '📅';
+                    container.innerHTML += `
+                    <div class="list-item">
+                        <div class="avatar" style="background:#e0f2f1; display:flex; justify-content:center; align-items:center; font-size:20px;">${icon}</div>
+                        <div class="item-info">
+                            <div class="item-header">
+                                <span class="item-title">${ev.title}</span>
+                                <span class="item-meta">${ev.date}</span>
+                            </div>
+                            <div class="item-subtitle">${ev.desc}</div>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+        else if (state.activeTab === 'skills') {
+            state.skills.forEach(sk => {
+                if(sk.skill.toLowerCase().includes(search) || sk.name.toLowerCase().includes(search)) {
+                    container.innerHTML += `
+                    <div class="list-item" onclick="openChat('${sk.name}')">
+                        <img src="${sk.avatar}" class="avatar">
+                        <div class="item-info">
+                            <div class="item-header">
+                                <span class="item-title">${sk.name}</span>
+                                <span class="item-meta" style="color:var(--primary-green); font-weight:bold;">${sk.price}</span>
+                            </div>
+                            <div class="item-subtitle">${sk.skill} - ${sk.desc}</div>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+    }
+
+    // --- HELPER UI FUNCTIONS ---
+
+    function createListItem(title, subtitle, meta, avatar, unread = 0, isCommunity = false) {
+        const badge = unread > 0 ? `<div class="badge">${unread}</div>` : '';
+        const icon = isCommunity ? `<span style="margin-right:10px; color:var(--text-secondary);">👥</span>` : '';
+        return `
+        <div class="list-item" onclick="openChat('${title}')">
+            <img src="${avatar}" class="avatar">
+            <div class="item-info">
+                <div class="item-header">
+                    <span class="item-title">${icon}${title}</span>
+                    <span class="item-meta">${meta}</span>
+                </div>
+                <div class="item-subtitle">
+                    ${subtitle} ${badge}
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function filterContent() {
+        renderContent();
+    }
+
+    // --- CHAT LOGIC ---
+
+    function openChat(name) {
+        document.getElementById('main-screen').classList.remove('active'); // Or keep behind
+        document.getElementById('chat-view').classList.add('active');
+        document.getElementById('chat-title').innerText = name;
+        
+        // Simulate loading some messages
+        const msgBox = document.getElementById('chat-messages');
+        msgBox.innerHTML = '';
+        
+        // Add fake history
+        addMessageToView('incoming', `Hello, this is the chat with ${name}.`);
+        if(name.includes('Student Affairs') || name.includes('Official')) {
+            addMessageToView('incoming', 'How can we help you today?');
+        }
+    }
+
+    function closeChat() {
+        document.getElementById('chat-view').classList.remove('active');
+        // No need to re-add 'active' to main-screen because of z-index layering, 
+        // but logically we just hide the overlay.
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msg-input');
+        const txt = input.value.trim();
+        if(txt) {
+            addMessageToView('outgoing', txt);
+            input.value = '';
+            
+            // Fake Reply
+            setTimeout(() => {
+                addMessageToView('incoming', 'Thanks for your message! (Auto-reply)');
+            }, 1500);
+        }
+    }
+
+    function addMessageToView(type, text) {
+        const box = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
+        div.innerHTML = `${text} <span class="msg-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // --- MODAL & FAB LOGIC ---
+
+    function handleFabClick() {
+        if (state.activeTab === 'events') {
+            toggleModal('event-modal');
+        } else if (state.activeTab === 'skills') {
+            toggleModal('skill-modal');
+        }
+    }
+
+    function toggleModal(id) {
+        const el = document.getElementById(id);
+        if (el.classList.contains('open')) {
+            el.classList.remove('open');
+        } else {
+            el.classList.add('open');
+        }
+    }
+
+    function addEvent() {
+        const title = document.getElementById('event-title').value;
+        const date = document.getElementById('event-date').value;
+        const desc = document.getElementById('event-desc').value;
+
+        if(title && date) {
+            state.events.unshift({ id: Date.now(), title, date, desc, type: 'official' });
+            renderContent();
+            toggleModal('event-modal');
+            showToast('Event Added Successfully');
+            
+            // Clear inputs
+            document.getElementById('event-title').value = '';
+            document.getElementById('event-date').value = '';
+            document.getElementById('event-desc').value = '';
+        } else {
+            showToast("Please fill required fields");
+        }
+    }
+
+    function addSkill() {
+        const skill = document.getElementById('skill-title').value;
+        const price = document.getElementById('skill-price').value;
+        const desc = document.getElementById('skill-desc').value;
+        
+        if(skill && price) {
+            state.skills.unshift({
+                id: Date.now(),
+                name: state.currentUser ? state.currentUser.name : 'Anonymous Student',
+                skill,
+                price,
+                desc,
+                avatar: `https://picsum.photos/seed/${Date.now()}/50/50`
+            });
+            renderContent();
+            toggleModal('skill-modal');
+            showToast('Skill Advert Posted');
+            
+            document.getElementById('skill-title').value = '';
+            document.getElementById('skill-price').value = '';
+            document.getElementById('skill-desc').value = '';
+        } else {
+            showToast("Please fill required fields");
+        }
+    }
+
+    // --- CONSENSUS AI INTEGRATION ---
+
+    function openAIModal() {
+        toggleModal('ai-modal');
+    }
+
+    function sendAIMessage() {
+        const input = document.getElementById('ai-input');
+        const txt = input.value.trim();
+        if(!txt) return;
+
+        const chatBox = document.getElementById('ai-chat-box');
+        
+        // User msg
+        chatBox.innerHTML += `<div class="ai-bubble user">${txt}</div>`;
+        
+        // Simulated AI processing
+        chatBox.innerHTML += `<div class="ai-bubble" id="ai-loading">Searching Consensus Database...</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = '';
+
+        setTimeout(() => {
+            document.getElementById('ai-loading').remove();
+            chatBox.innerHTML += `
+            <div class="ai-bubble">
+                Based on Consensus AI data for "<strong>${txt}</strong>":<br><br>
+                I found several research papers related to this topic. Since I am a simulated interface, please click the link below to view the full results on Consensus.ai.<br><br>
+                <a href="https://consensus.ai/search?q=${encodeURIComponent(txt)}" target="_blank" style="color:var(--primary-green); font-weight:bold;">View Results on Consensus.ai &rarr;</a>
+            </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 1500);
+    }
+
+    // Enter key support for inputs
+    document.getElementById('msg-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+    document.getElementById('ai-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendAIMessage();
+    });
+
+</script>
+
+</body>
+</html>

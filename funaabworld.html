@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FUNAAB WORLD 2.0</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #008069;
+            --light-green: #00a884;
+            --bg-color: #d1d7db;
+            --chat-bg: #efeae2;
+            --white: #ffffff;
+            --gray-text: #54656f;
+            --dark-gray: #111b21;
+            --light-gray: #f0f2f5;
+            --incoming-bubble: #ffffff;
+            --outgoing-bubble: #d9fdd3;
+            --blue-accent: #34b7f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #d1d7db;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* App Container (Mobile Simulation) */
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            max-height: 900px;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .header-icons i {
+            font-size: 20px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background-color: var(--white);
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .search-box {
+            background-color: var(--light-gray);
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            margin-left: 10px;
+            width: 100%;
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--white);
+            position: relative;
+        }
+
+        /* Tabs */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* List Items (Chats, Skills, Calls) */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .list-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .list-info {
+            flex: 1;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .list-name {
+            font-weight: 600;
+            font-size: 17px;
+            color: var(--dark-gray);
+        }
+
+        .list-meta {
+            font-size: 12px;
+            color: var(--gray-text);
+        }
+
+        .list-sub {
+            font-size: 14px;
+            color: var(--gray-text);
+            display: flex;
+            align-items: center;
+        }
+
+        .badge {
+            background-color: #25d366;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+
+        /* Specific Styles for Skills Tab */
+        .skill-tag {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: auto;
+            font-weight: bold;
+        }
+        
+        .price-tag {
+            color: var(--primary-green);
+            font-weight: bold;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+
+        /* Floating Action Button (FAB) */
+        .fab {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background-color: var(--light-green);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 20;
+            transition: transform 0.2s;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            height: 60px;
+            background-color: var(--light-gray);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gray-text);
+            font-size: 10px;
+            cursor: pointer;
+            width: 25%;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-green);
+        }
+
+        /* Chat Interface (Overlay) */
+        .chat-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--chat-bg);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .chat-interface.open {
+            transform: translateX(0);
+        }
+
+        .chat-header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .msg-in {
+            align-self: flex-start;
+            background-color: var(--incoming-bubble);
+            border-top-left-radius: 0;
+        }
+
+        .msg-out {
+            align-self: flex-end;
+            background-color: var(--outgoing-bubble);
+            border-top-right-radius: 0;
+        }
+        
+        .msg-time {
+            font-size: 10px;
+            color: #999;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .chat-footer {
+            padding: 10px;
+            background-color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+
+        .send-btn {
+            color: var(--primary-green);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Modals */
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background-color: var(--light-green);
+            padding: 15px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--gray-text);
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: white;
+            width: 100%;
+        }
+
+        .close-modal {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 200;
+            pointer-events: none;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Official Event Styling */
+        .event-card {
+            background: linear-gradient(135deg, #008069, #00a884);
+            color: white;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,128,105, 0.3);
+        }
+        
+        .event-date {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .event-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .event-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* Hidden initially */
+        #registration-modal {
+            z-index: 1000;
+            background-color: var(--white);
+        }
+        #registration-modal .modal-content {
+            height: 100%;
+            max-height: none;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <header>
+        <div class="header-title" id="page-title">FUNAAB World</div>
+        <div class="header-icons">
+            <!-- Official "Plus" Sign for Events/Info -->
+            <i class="fas fa-plus-circle" onclick="openAddEventModal()" title="Add Official Event/Info"></i>
+            <i class="fas fa-search" onclick="focusSearch()"></i>
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container" id="search-container">
+        <div class="search-box">
+            <i class="fas fa-search" style="color: var(--gray-text)"></i>
+            <input type="text" id="global-search" placeholder="Search students, skills, or events..." oninput="handleSearch()">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        
+        <!-- CHATS TAB -->
+        <div id="tab-chats" class="tab-content active">
+            <!-- Pinned: Student Affairs -->
+            <div class="list-item" onclick="openChat('Student Affairs Unit', 'official')">
+                <img src="https://picsum.photos/seed/funaab/50/50" class="avatar">
+                <div class="list-info">
+                    <div class="list-header">
+                        <span class="list-name">Student Affairs Unit <i class="fas fa-check-circle" style="color: #34b7f1; font-size: 12px;"></i></span>
+                        <span class="list-meta">10:30 AM</span>
+                    </div>
+                    <div class="list-sub">
+                        <span><i class="fas fa-bell" style="color: red; margin-right:5px;"></i> Mandatory: All students must...</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Chat List Generated by JS -->
+            <div id="chat-list-container"></div>
+        </div>
+
+        <!-- SKILLS TAB -->
+        <div id="tab-skills" class="tab-content">
+            <div style="padding: 15px; background-color: #e3f2fd; color: #0d47a1; font-size: 13px; text-align: center;">
+                <i class="fas fa-briefcase"></i> Advertise your skills and connect with fellow students.
+            </div>
+            <div id="skills-list-container"></div>
+            <div class="fab" style="bottom: 80px; right: 20px; background-color: #0277bd;" onclick="openAddSkillModal()">
+                <i class="fas fa-pen"></i>
+            </div>
+        </div>
+
+        <!-- EVENTS/UPDATES TAB -->
+        <div id="tab-events" class="tab-content">
+            <div id="events-container">
+                <!-- Event Cards Injected Here -->
+            </div>
+        </div>
+
+        <!-- COMMUNITIES TAB -->
+        <div id="tab-communities" class="tab-content">
+            <div class="list-item">
+                <img src="https://picsum.photos/seed/college/50/50" class="avatar">
+                <div class="list-info">
+                    <div class="list-header">
+                        <span class="list-name">COLVET</span>
+                        <span class="list-meta">New Post</span>
+                    </div>
+                    <div class="list-sub">College of Veterinary Medicine</div>
+                </div>
+            </div>
+            <div class="list-item">
+                <img src="https://picsum.photos/seed/engineering/50/50" class="avatar">
+                <div class="list-info">
+                    <div class="list-header">
+                        <span class="list-name">COLLENG</span>
+                        <span class="list-meta">Yesterday</span>
+                    </div>
+                    <div class="list-sub">College of Engineering</div>
+                </div>
+            </div>
+            <div class="list-item">
+                <img src="https://picsum.photos/seed/natural/50/50" class="avatar">
+                <div class="list-info">
+                    <div class="list-header">
+                        <span class="list-name">COLNAS</span>
+                        <span class="list-meta">Yesterday</span>
+                    </div>
+                    <div class="list-sub">College of Natural Science</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALLS TAB -->
+        <div id="tab-calls" class="tab-content">
+            <div class="list-item" style="justify-content: center; color: var(--primary-green); font-weight: bold;">
+                <i class="fas fa-link" style="margin-right: 10px;"></i> Create Call Link
+            </div>
+            <div id="call-history-container"></div>
+        </div>
+
+    </main>
+
+    <!-- FAB for New Chat -->
+    <div class="fab" onclick="openRegistrationCheck()" id="main-fab">
+        <i class="fas fa-comment-medical"></i>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('chats', this)">
+            <i class="fas fa-comment-alt"></i>
+            <span>Chats</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('skills', this)">
+            <i class="fas fa-laptop-code"></i>
+            <span>Skills</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('events', this)">
+            <i class="fas fa-bullhorn"></i>
+            <span>Updates</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('communities', this)">
+            <i class="fas fa-users"></i>
+            <span>Community</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('calls', this)">
+            <i class="fas fa-phone-alt"></i>
+            <span>Calls</span>
+        </div>
+    </nav>
+
+    <!-- Chat Interface Overlay -->
+    <div class="chat-interface" id="chat-interface">
+        <div class="chat-header">
+            <i class="fas fa-arrow-left back-btn" onclick="closeChat()"></i>
+            <img src="" class="avatar" id="chat-avatar" style="margin-right: 10px; width: 35px; height: 35px;">
+            <div class="header-title" id="chat-title" style="font-size: 16px; margin: 0;">User</div>
+            <div class="header-icons">
+                <i class="fas fa-video"></i>
+                <i class="fas fa-phone"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-messages">
+            <!-- Messages go here -->
+        </div>
+        <div class="chat-footer">
+            <i class="fas fa-plus" style="color: var(--gray-text)"></i>
+            <input type="text" class="chat-input" id="message-input" placeholder="Message" onkeypress="handleEnter(event)">
+            <i class="fas fa-microphone" style="color: var(--gray-text)"></i>
+            <i class="fas fa-paper-plane send-btn" onclick="sendMessage()"></i>
+        </div>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Registration Modal (First Run) -->
+    <div class="modal active" id="registration-modal">
+        <div class="modal-content" style="background-color: var(--light-gray); align-items: center; justify-content: center;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Federal_University_of_Agriculture_Abeokuta_logo.svg/1200px-Federal_University_of_Agriculture_Abeokuta_logo.svg.png" style="width: 100px; margin-bottom: 20px; opacity: 0.8;" alt="Logo">
+            <h2 style="color: var(--primary-green); margin-bottom: 10px;">FUNAAB World 2.0</h2>
+            <p style="color: #666; margin-bottom: 30px; text-align: center;">Register your contact to connect with students and officials.</p>
+            
+            <div style="width: 80%; max-width: 300px;">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-name" placeholder="e.g. Ade Ola">
+                </div>
+                <div class="form-group">
+                    <label>Matric Number / Department</label>
+                    <input type="text" id="reg-matric" placeholder="e.g. CPE/20/1234">
+                </div>
+                <button class="btn btn-primary" onclick="completeRegistration()">Register & Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Official Event Modal -->
+    <div class="modal" id="add-event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Add Official Event / Info</span>
+                <i class="fas fa-times close-modal" onclick="closeModal('add-event-modal')"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="event-title" placeholder="e.g. Exam Schedule">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="event-date">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="event-desc" rows="3" placeholder="Important details..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="event-type">
+                        <option value="info">General Information</option>
+                        <option value="mandatory">Mandatory (Must Read)</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="submitEvent()">Post Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Skill Modal -->
+    <div class="modal" id="add-skill-modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #0277bd;">
+                <span>Advertise Your Skill</span>
+                <i class="fas fa-times close-modal" onclick="closeModal('add-skill-modal')"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Skill / Service</label>
+                    <input type="text" id="skill-name" placeholder="e.g. Graphic Design, Barbing, Tutoring">
+                </div>
+                <div class="form-group">
+                    <label>Price Range</label>
+                    <input type="text" id="skill-price" placeholder="e.g. #2,000 - #5,000">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="skill-desc" rows="2" placeholder="Briefly describe what you offer"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="submitSkill()" style="background-color: #0277bd;">Post Ad</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Action Successful</div>
+</div>
+
+<script>
+    // --- Data & State ---
+    const state = {
+        currentUser: null,
+        activeChat: null,
+        events: [
+            { id: 1, title: "Matriculation Ceremony", date: "2023-11-15", desc: "All freshers must be at the amphitheater by 8:00 AM. Academic gowns are available at the faculty office.", type: "mandatory" },
+            { id: 2, title: " Semester Exam Begins", date: "2023-12-01", desc: "First semester examination commences. Check your departmental notice board for timetables.", type: "info" }
+        ],
+        skills: [
+            { id: 1, name: "Tolu Graphics", skill: "Logo & Flyer Design", price: "#3,000", desc: "Quality designs under 24 hours." },
+            { id: 2, name: "Emmanuel Codes", skill: "Web Development", price: "#15,000", desc: "I build student portfolio and assignment websites." },
+            { id: 3, name: "Sara Barbing Salon", skill: "Haircut & Hairstyling", price: "#500", desc: "Located inside Student Union building." }
+        ],
+        chats: [
+            { id: 1, name: "Dept. President (CPS)", msg: "Meeting holds today by 4 PM.", time: "9:45 AM", unread: 2 },
+            { id: 2, name: "Study Group 300L", msg: "Has anyone solved Q4?", time: "Yesterday", unread: 0 },
+            { id: 3, name: "Campus Shuttle Driver", msg: "I am at the gate now.", time: "Yesterday", unread: 0 },
+            { id: 4, name: "Roommate (Tolu)", msg: "Please bring food.", time: "Tuesday", unread: 0 }
+        ],
+        messages: {
+            'Student Affairs Unit': [
+                { text: "Welcome to FUNAAB World 2.0. Please ensure you have registered your courses.", time: "10:00 AM", type: "in" },
+                { text: "Mandatory: All students must verify their ID cards at the Student Affairs Building this week.", time: "10:30 AM", type: "in" }
+            ]
+        }
+    };
+
+    // --- Initialization ---
+    window.onload = function() {
+        renderChats();
+        renderSkills();
+        renderEvents();
+    };
+
+    function completeRegistration() {
+        const name = document.getElementById('reg-name').value;
+        const matric = document.getElementById('reg-matric').value;
+        
+        if(name && matric) {
+            state.currentUser = { name, matric };
+            closeModal('registration-modal');
+            showToast(`Welcome, ${name}!`);
+            
+            // Add self to chats for demo
+            state.chats.unshift({
+                id: 99, 
+                name: "My Status", 
+                msg: "Tap to add status update", 
+                time: "Just now", 
+                unread: 0,
+                isStatus: true
+            });
+            renderChats();
+        } else {
+            showToast("Please fill in your details.");
+        }
+    }
+
+    // --- Navigation & Tabs ---
+    function switchTab(tabId, element) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        // Show selected tab
+        document.getElementById('tab-' + tabId).classList.add('active');
+        
+        // Update nav icons
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        element.classList.add('active');
+
+        // Update Header Title
+        const titles = {
+            'chats': 'FUNAAB World',
+            'skills': 'Student Skills',
+            'events': 'Updates & Events',
+            'communities': 'Communities',
+            'calls': 'Calls'
+        };
+        document.getElementById('page-title').innerText = titles[tabId];
+
+        // Toggle FAB visibility
+        const fab = document.getElementById('main-fab');
+        if (tabId === 'chats') fab.style.display = 'flex';
+        else fab.style.display = 'none';
+    }
+
+    // --- Rendering Lists ---
+    function renderChats() {
+        const container = document.getElementById('chat-list-container');
+        container.innerHTML = '';
+        state.chats.forEach(chat => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            if(chat.isStatus) {
+                div.onclick = () => showToast("Status feature coming soon!");
+                div.innerHTML = `
+                    <div class="avatar" style="display:flex; justify-content:center; align-items:center; background:#ddd; color:#666;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="list-info">
+                        <div class="list-header">
+                            <span class="list-name">${chat.name}</span>
+                            <i class="fas fa-sync-alt" style="font-size:12px; color:#666;"></i>
+                        </div>
+                        <div class="list-sub">
+                           ${chat.msg}
+                        </div>
+                    </div>
+                `;
+            } else {
+                div.onclick = () => openChat(chat.name, 'student');
+                const seed = chat.name.replace(/\s/g, '');
+                div.innerHTML = `
+                    <img src="https://picsum.photos/seed/${seed}/50/50" class="avatar">
+                    <div class="list-info">
+                        <div class="list-header">
+                            <span class="list-name">${chat.name}</span>
+                            <span class="list-meta">${chat.time}</span>
+                        </div>
+                        <div class="list-sub">
+                            <span>${chat.msg}</span>
+                            ${chat.unread > 0 ? `<span class="badge">${chat.unread}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            container.appendChild(div);
+        });
+    }
+
+    function renderSkills() {
+        const container = document.getElementById('skills-list-container');
+        container.innerHTML = '';
+        state.skills.forEach(skill => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            const seed = skill.name.replace(/\s/g, '');
+            div.innerHTML = `
+                <img src="https://picsum.photos/seed/${seed}/50/50" class="avatar">
+                <div class="list-info">
+                    <div class="list-header">
+                        <span class="list-name">${skill.name}</span>
+                        <span class="skill-tag">${skill.skill}</span>
+                    </div>
+                    <div class="list-sub">
+                        <span>${skill.desc}</span>
+                        <span class="price-tag">${skill.price}</span>
+                    </div>
+                </div>
+            `;
+            // Clicking a skill could open a chat to hire them
+            div.onclick = () => {
+                if(confirm(`Do you want to contact ${skill.name} for ${skill.skill}?`)) {
+                    openChat(skill.name, 'student');
+                }
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function renderEvents() {
+        const container = document.getElementById('events-container');
+        container.innerHTML = '';
+        
+        // Sort mandatory to top
+        const sortedEvents = [...state.events].sort((a,b) => (a.type === 'mandatory' ? -1 : 1));
+
+        sortedEvents.forEach(evt => {
+            const div = document.createElement('div');
+            div.className = 'event-card';
+            const icon = evt.type === 'mandatory' ? '<i class="fas fa-exclamation-circle"></i>' : '<i class="fas fa-info-circle"></i>';
+            div.innerHTML = `
+                <div class="event-date">${icon} ${evt.date} • ${evt.type.toUpperCase()}</div>
+                <div class="event-title">${evt.title}</div>
+                <div class="event-desc">${evt.desc}</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // --- Chat Functionality ---
+    function openChat(name, type) {
+        state.activeChat = name;
+        const interface = document.getElementById('chat-interface');
+        const title = document.getElementById('chat-title');
+        const avatar = document.getElementById('chat-avatar');
+        const msgsContainer = document.getElementById('chat-messages');
+
+        title.innerText = name;
+        const seed = name.replace(/\s/g, '');
+        avatar.src = `https://picsum.photos/seed/${seed}/50/50`;
+        
+        msgsContainer.innerHTML = '';
+        
+        // Load existing messages or start fresh
+        const history = state.messages[name] || [];
+        if(history.length === 0 && type === 'official') {
+             // Default official message if empty
+             history.push({text: "How can we help you today?", time: "Now", type: "in"});
+        }
+
+        history.forEach(msg => appendMessage(msg.text, msg.type, msg.time));
+        
+        interface.classList.add('open');
+    }
+
+    function closeChat() {
+        document.getElementById('chat-interface').classList.remove('open');
+        state.activeChat = null;
+    }
+
+    function appendMessage(text, type, time = 'Now') {
+        const container = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.className = `message msg-${type}`;
+        div.innerHTML = `
+            ${text}
+            <div class="msg-time">${time} <i class="fas fa-check-double" style="color: ${type === 'out' ? '#34b7f1' : '#999'}; font-size: 10px; margin-left:3px;"></i></div>
+        `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const text = input.value.trim();
+        if(text && state.activeChat) {
+            // Add to UI
+            appendMessage(text, 'out');
+            
+            // Save to state
+            if(!state.messages[state.activeChat]) state.messages[state.activeChat] = [];
+            state.messages[state.activeChat].push({ text: text, time: 'Now', type: 'out' });
+            
+            input.value = '';
+            
+            // Auto reply simulation
+            setTimeout(() => {
+                if(state.activeChat !== 'Student Affairs Unit') {
+                    appendMessage("Thanks for the message! I'm in class right now.", 'in', 'Now');
+                } else {
+                    appendMessage("Your message has been received by the Student Affairs Unit.", 'in', 'Now');
+                }
+            }, 1500);
+        }
+    }
+
+    function handleEnter(e) {
+        if(e.key === 'Enter') sendMessage();
+    }
+
+    // --- Modal Logic ---
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    // --- Specific Features ---
+    
+    // 1. Add Event (Official)
+    function openAddEventModal() {
+        openModal('add-event-modal');
+    }
+
+    function submitEvent() {
+        const title = document.getElementById('event-title').value;
+        const date = document.getElementById('event-date').value;
+        const desc = document.getElementById('event-desc').value;
+        const type = document.getElementById('event-type').value;
+
+        if(title && desc) {
+            state.events.unshift({ id: Date.now(), title, date, desc, type });
+            renderEvents();
+            closeModal('add-event-modal');
+            showToast("Official Event Posted!");
+            
+            // Clear form
+            document.getElementById('event-title').value = '';
+            document.getElementById('event-desc').value = '';
+        } else {
+            showToast("Please fill all fields");
+        }
+    }
+
+    // 2. Add Skill (Student)
+    function openAddSkillModal() {
+        if(!state.currentUser) {
+            showToast("Please register first to advertise skills.");
+            return;
+        }
+        openModal('add-skill-modal');
+    }
+
+    function submitSkill() {
+        const skill = document.getElementById('skill-name').value;
+        const price = document.getElementById('skill-price').value;
+        const desc = document.getElementById('skill-desc').value;
+
+        if(skill && price) {
+            state.skills.unshift({
+                id: Date.now(),
+                name: state.currentUser.name,
+                skill,
+                price,
+                desc
+            });
+            renderSkills();
+            closeModal('add-skill-modal');
+            showToast("Skill Advertised Successfully!");
+            
+            // Clear form
+            document.getElementById('skill-name').value = '';
+            document.getElementById('skill-price').value = '';
+        } else {
+            showToast("Skill and Price are required");
+        }
+    }
+
+    // 3. Search
+    function focusSearch() {
+        document.getElementById('global-search').focus();
+    }
+
+    function handleSearch() {
+        const query = document.getElementById('global-search').value.toLowerCase();
+        // Simple implementation: Filter visible list items based on name
+        // In a real app, this would switch views or filter specific data arrays
+        
+        // Just a visual feedback for this prototype
+        const activeTab = document.querySelector('.tab-content.active').id;
+        const items = document.querySelectorAll(`#${activeTab} .list-item`);
+        
+        items.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            if(text.includes(query)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // 4. Toast Notification
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function openRegistrationCheck() {
+        if(!state.currentUser) {
+            openModal('registration-modal');
+        } else {
+            showToast("Create a new chat...");
+        }
+    }
+
+</script>
+
+</body>
+</html>

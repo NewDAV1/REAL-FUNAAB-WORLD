@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WestNaija Glam | Stylist Community</title>
+    <!-- Importing a nice font for a modern app feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Using FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS VARIABLES & THEME SETUP --- */
+        :root {
+            /* Palette based on request: Lemon Green, Yellow, Blue, Pink */
+            --color-bg: #F9FAFB;
+            --color-lemon: #DFFF00; /* Lime Green */
+            --color-yellow: #FFD700;
+            --color-blue: #0057FF;
+            --color-pink: #FF007F;
+            --color-text: #1F2937;
+            --color-text-light: #6B7280;
+            --color-white: #FFFFFF;
+            
+            --radius-lg: 16px;
+            --radius-md: 8px;
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 87, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll, handle inside containers */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: var(--color-white);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--color-blue);
+        }
+
+        /* Multi-colored icon as requested */
+        .logo-icon {
+            font-size: 1.8rem;
+            background: -webkit-linear-gradient(45deg, var(--color-blue), var(--color-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-tagline {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            display: none;
+        }
+        
+        @media(min-width: 768px) {
+            .app-tagline { display: block; }
+        }
+
+        /* --- MAIN LAYOUT (TWO COLUMNS) --- */
+        main {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        /* Left Column: Registration */
+        .col-register {
+            flex: 1;
+            background: var(--color-white);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-right: 1px solid #eee;
+        }
+
+        /* Right Column: Booking/Search */
+        .col-booking {
+            flex: 1.2;
+            background-color: #F0F4FF; /* Very light blue tint */
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* --- TYPOGRAPHY & HEADINGS --- */
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--color-text);
+        }
+
+        h2 i {
+            margin-right: 10px;
+        }
+
+        .section-desc {
+            margin-bottom: 30px;
+            color: var(--color-text-light);
+        }
+
+        /* --- FORMS & INPUTS --- */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E5E7EB;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-blue);
+            box-shadow: 0 0 0 3px rgba(0, 87, 255, 0.1);
+        }
+
+        /* Button Styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            font-size: 1rem;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--color-blue);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 87, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #0044d6;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--color-white);
+            color: var(--color-blue);
+            border: 2px solid var(--color-blue);
+        }
+
+        .btn-secondary:hover {
+            background: #eef4ff;
+        }
+
+        /* --- STYLIST CARDS (BOOKING COLUMN) --- */
+        .search-bar {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 2;
+        }
+        
+        .search-bar select {
+            flex: 1;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stylist-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.2s;
+            position: relative;
+            border-top: 5px solid var(--color-pink);
+        }
+
+        .stylist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--color-lemon);
+        }
+
+        .stylist-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+
+        .location-badge {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .location-badge i { color: var(--color-pink); }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background: #FFF4E6; /* Light yellow tint */
+            color: #B76E00;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag.highlight {
+            background: #E6F7FF;
+            color: #0050B3;
+        }
+
+        .rating {
+            color: var(--color-yellow);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            border-top: 6px solid var(--color-blue);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text-light);
+        }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 300px;
+            border-left: 5px solid;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success { border-left-color: var(--color-lemon); }
+        .toast.error { border-left-color: var(--color-pink); }
+        .toast.info { border-left-color: var(--color-blue); }
+
+        .toast i { font-size: 1.2rem; }
+        .toast.success i { color: #84CC16; }
+        .toast.error i { color: var(--color-pink); }
+        .toast.info i { color: var(--color-blue); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+                height: auto;
+                overflow: auto;
+            }
+            
+            body {
+                overflow: auto;
+            }
+
+            .col-register, .col-booking {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+                height: auto;
+                min-height: 500px;
+            }
+
+            /* Visual distinction for mobile stacking */
+            .col-register {
+                background: #fff;
+            }
+            .col-booking {
+                background: #F0F4FF;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-scissors logo-icon"></i>
+            <div>WestNaija<span>Glam</span></div>
+        </div>
+        <div class="app-tagline">
+            Connecting the best stylists in Western Nigeria
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Left Column: Stylist Registration -->
+        <section class="col-register" id="register-section">
+            <div style="flex: 1; max-width: 600px; margin: 0 auto; width: 100%;">
+                <h2><i class="fa-solid fa-user-plus" style="color: var(--color-blue);"></i> Join as a Stylist</h2>
+                <p class="section-desc">Expand your clientele. Register your salon or freelance services in our community today.</p>
+                
+                <form id="stylist-form">
+                    <div class="form-group">
+                        <label for="name">Full Name / Salon Name</label>
+                        <input type="text" id="name" placeholder="e.g. Shade's Braids, Lagos" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">Location (State)</label>
+                        <select id="state" required>
+                            <option value="" disabled selected>Select your state</option>
+                            <option value="Lagos">Lagos</option>
+                            <option value="Oyo">Oyo (Ibadan)</option>
+                            <option value="Ogun">Ogun</option>
+                            <option value="Osun">Osun</option>
+                            <option value="Ondo">Ondo</option>
+                            <option value="Ekiti">Ekiti</option>
+                            <option value="Kwara">Kwara</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="specialty">Primary Specialty</label>
+                        <select id="specialty" required>
+                            <option value="Braids">Braids & Weaves</option>
+                            <option value="Natural Hair">Natural Hair Care</option>
+                            <option value="Barber">Barber / Cuts</option>
+                            <option value="Makeup">Makeup & Gele</option>
+                            <option value="Locs">Locs Maintenance</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number (WhatsApp)</label>
+                        <input type="tel" id="phone" placeholder="080X XXX XXXX" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        Register Stylist <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Right Column: Client Booking -->
+        <section class="col-booking" id="booking-section">
+            <h2><i class="fa-solid fa-map-location-dot" style="color: var(--color-pink);"></i> Find & Book</h2>
+            <p class="section-desc">Discover top-rated stylists near you in the Western Region.</p>
+
+            <!-- Search Filter -->
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search stylist name or specialty...">
+                <select id="filter-state">
+                    <option value="All">All States</option>
+                    <option value="Lagos">Lagos</option>
+                    <option value="Oyo">Oyo</option>
+                    <option value="Ogun">Ogun</option>
+                    <option value="Osun">Osun</option>
+                    <option value="Ondo">Ondo</option>
+                    <option value="Ekiti">Ekiti</option>
+                    <option value="Kwara">Kwara</option>
+                </select>
+            </div>
+
+            <!-- Results Area -->
+            <div class="results-grid" id="stylist-results">
+                <!-- Javascript will populate cards here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Booking Modal -->
+    <div class="modal-overlay" id="booking-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Confirm Booking</h3>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div id="modal-content">
+                <!-- Dynamic Content -->
+            </div>
+            <form id="booking-form" style="margin-top: 20px;">
+                <input type="hidden" id="booking-stylist-id">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" required placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Preferred Date</label>
+                    <input type="date" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Confirm Appointment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // --- DATA & STATE ---
+        // Initial mock data of stylists in Western Nigeria
+        let stylists = [
+            {
+                id: 1,
+                name: "Bimpe's Touch",
+                state: "Lagos",
+                specialty: "Braids",
+                rating: 4.8,
+                reviews: 120,
+                image: "https://picsum.photos/seed/bimpe/200/200",
+                phone: "08012345678"
+            },
+            {
+                id: 2,
+                name: "Ibadan Kutters",
+                state: "Oyo",
+                specialty: "Barber",
+                rating: 4.5,
+                reviews: 85,
+                image: "https://picsum.photos/seed/ibkutters/200/200",
+                phone: "08087654321"
+            },
+            {
+                id: 3,
+                name: "Abeokuta Naturals",
+                state: "Ogun",
+                specialty: "Natural Hair",
+                rating: 4.9,
+                reviews: 200,
+                image: "https://picsum.photos/seed/abeokuta/200/200",
+                phone: "08123456789"
+            },
+            {
+                id: 4,
+                name: "Osun Glams",
+                state: "Osun",
+                specialty: "Makeup",
+                rating: 4.7,
+                reviews: 50,
+                image: "https://picsum.photos/seed/osun/200/200",
+                phone: "07011223344"
+            }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const registerForm = document.getElementById('stylist-form');
+        const resultsContainer = document.getElementById('stylist-results');
+        const searchInput = document.getElementById('search-input');
+        const filterState = document.getElementById('filter-state');
+        const bookingModal = document.getElementById('booking-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const bookingForm = document.getElementById('booking-form');
+        const modalContent = document.getElementById('modal-content');
+        const toastContainer = document.getElementById('toast-container');
+
+        // --- INITIAL RENDER ---
+        renderStylists(stylists);
+
+        // --- EVENT LISTENERS ---
+
+        // 1. Registration Logic
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Get values
+            const name = document.getElementById('name').value;
+            const state = document.getElementById('state').value;
+            const specialty = document.getElementById('specialty').value;
+            const phone = document.getElementById('phone').value;
+
+            // Create new stylist object
+            const newStylist = {
+                id: Date.now(), // simple unique ID
+                name: name,
+                state: state,
+                specialty: specialty,
+                rating: 0, // New stylists have no rating yet
+                reviews: 0,
+                image: `https://picsum.photos/seed/${Date.now()}/200/200`,
+                phone: phone
+            };
+
+            // Add to top of list
+            stylists.unshift(newStylist);
+            
+            // Re-render list
+            renderStylists(stylists);
+
+            // Reset Form
+            registerForm.reset();
+
+            // Show Success Toast
+            showToast('Success! You have joined the community.', 'success');
+
+            // Scroll to results on mobile to show them their entry
+            if(window.innerWidth < 900) {
+                document.getElementById('booking-section').scrollIntoView({behavior: 'smooth'});
+            }
+        });
+
+        // 2. Search & Filter Logic
+        searchInput.addEventListener('input', filterStylists);
+        filterState.addEventListener('change', filterStylists);
+
+        function filterStylists() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedState = filterState.value;
+
+            const filtered = stylists.filter(stylist => {
+                const matchesSearch = stylist.name.toLowerCase().includes(searchTerm) || 
+                                      stylist.specialty.toLowerCase().includes(searchTerm);
+                const matchesState = selectedState === "All" || stylist.state === selectedState;
+                
+                return matchesSearch && matchesState;
+            });
+
+            renderStylists(filtered);
+        }
+
+        // 3. Modal Logic
+        closeModalBtn.addEventListener('click', () => {
+            bookingModal.classList.remove('active');
+        });
+
+        // Close modal if clicking outside
+        bookingModal.addEventListener('click', (e) => {
+            if (e.target === bookingModal) {
+                bookingModal.classList.remove('active');
+            }
+        });
+
+        bookingForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate booking API call
+            const btn = bookingForm.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Processing...";
+            
+            setTimeout(() => {
+                bookingModal.classList.remove('active');
+                showToast('Appointment booked successfully!', 'success');
+                bookingForm.reset();
+                btn.innerText = originalText;
+            }, 1500);
+        });
+
+        // --- FUNCTIONS ---
+
+        function renderStylists(list) {
+            resultsContainer.innerHTML = '';
+
+            if (list.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">
+                        <i class="fa-regular fa-face-frown" style="font-size: 3rem; margin-bottom: 10px; color: var(--color-blue);"></i>
+                        <p>No stylists found matching your criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach(stylist => {
+                const card = document.createElement('div');
+                card.className = 'stylist-card';
+                
+                // Determine rating stars
+                let stars = '';
+                for(let i=0; i<5; i++) {
+                    if(i < Math.floor(stylist.rating)) {
+                        stars += '<i class="fa-solid fa-star"></i>';
+                    } else {
+                        stars += '<i class="fa-regular fa-star"></i>';
+                    }
+                }
+
+                // New stylist badge logic
+                const newBadge = stylist.rating === 0 ? '<span class="tag highlight" style="background:var(--color-lemon); color:#333;">New</span>' : '';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <img src="${stylist.image}" alt="${stylist.name}" class="avatar">
+                        <div class="stylist-info">
+                            <h3>${stylist.name}</h3>
+                            <div class="location-badge">
+                                <i class="fa-solid fa-location-dot"></i> ${stylist.state}, NG
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">${stylist.specialty}</span>
+                        ${newBadge}
+                    </div>
+                    <div class="rating">
+                        ${stars} <span style="color:#999; font-size:0.8rem;">(${stylist.reviews})</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" onclick="openBookingModal(${stylist.id})">Book Now</button>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        // Global function to be accessible from HTML string
+        window.openBookingModal = function(id) {
+            const stylist = stylists.find(s => s.id === id);
+            if(!stylist) return;
+
+            modalContent.innerHTML = `
+                <div style="text-align:center; margin-bottom:20px;">
+                    <img src="${stylist.image}" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--color-blue);">
+                    <h4 style="margin-top:10px;">Booking: ${stylist.name}</h4>
+                    <p style="color:#666; font-size:0.9rem;">Service: ${stylist.specialty} | Location: ${stylist.state}</p>
+                </div>
+            `;
+            
+            bookingModal.classList.add('active');
+        };
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-circle-info';
+            if(type === 'success') icon = 'fa-circle-check';
+            if(type === 'error') icon = 'fa-triangle-exclamation';
+
+            toast.innerHTML = `
+                <i class="fa-solid ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
